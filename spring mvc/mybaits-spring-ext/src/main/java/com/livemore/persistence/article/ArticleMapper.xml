@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.livemore.persistence.article.ArticleMapper" >
+  <resultMap id="BaseResultMap" type="com.livemore.model.article.Article" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+    <result column="CATEGORY_ID" property="categoryId" jdbcType="INTEGER" />
+    <result column="CATEGORY_NAME" property="categoryName" jdbcType="VARCHAR" />
+    <result column="CREATER_USER" property="createrUser" jdbcType="BIGINT" />
+    <result column="CREATER_TIME" property="createrTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="LAST_INDEX_TIME" property="lastIndexTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.livemore.model.article.Article" extends="BaseResultMap" >
+    <result column="HTML_CONTENT" property="htmlContent" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, TITLE, CATEGORY_ID, CATEGORY_NAME, CREATER_USER, CREATER_TIME, REMARK, LAST_INDEX_TIME
+  </sql>
+  <sql id="Blob_Column_List" >
+    HTML_CONTENT
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from article
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  
+  
+	<!-- =========================select list ============================= -->
+	<sql id="Where_Clause">
+		<where>
+			<if test="id !=null ">
+				AND ID = #{id}
+			</if>
+			<if test="title !=null ">
+				AND TITLE = #{title}
+			</if>
+
+			<if test="categoryId != null">
+				AND CATEGORY_ID = #{categoryId}
+			</if>
+
+			<if test="categoryName != null">
+				AND CATEGORY_NAME = #{categoryName}
+			</if>
+			
+			<if test="createrUser != null">
+				AND CREATER_USER = #{createrUser}
+			</if>
+
+			<if test="htmlContent != null">
+				AND HTML_CONTENT LIKE CONCAT('%',#{htmlContent},'%')
+			</if>
+
+		</where>
+
+	</sql>
+	
+  <select id="selectArticleList" resultMap="ResultMapWithBLOBs" parameterType="Article" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from article
+    <include refid="Where_Clause" />
+	<if test="sortColumn != null">
+			ORDER BY ${sortColumn}
+	</if>
+  </select>
+  
+   <select id="selectArticleListByPage" resultMap="ResultMapWithBLOBs" parameterType="Article" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from article
+    <include refid="Where_Clause" />
+	<if test="sortColumn != null">
+			ORDER BY ${sortColumn}
+	</if>
+  </select>
+  
+  <select id="selectTotalCount"  resultType="long"
+		parameterType="Article">
+		select count(*)
+		from article
+		<include refid="Where_Clause" />
+	</select>
+  
+  <!-- ====================================================== -->
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from article
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.livemore.model.article.Article" >
+    insert into article (ID, TITLE, CATEGORY_ID, 
+      CATEGORY_NAME, CREATER_USER, CREATER_TIME, 
+      REMARK, LAST_INDEX_TIME, HTML_CONTENT
+      )
+    values (#{id,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, #{categoryId,jdbcType=INTEGER}, 
+      #{categoryName,jdbcType=VARCHAR}, #{createrUser,jdbcType=BIGINT}, #{createrTime,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR}, #{lastIndexTime,jdbcType=TIMESTAMP}, #{htmlContent,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.livemore.model.article.Article" >
+    insert into article
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="title != null" >
+        TITLE,
+      </if>
+      <if test="categoryId != null" >
+        CATEGORY_ID,
+      </if>
+      <if test="categoryName != null" >
+        CATEGORY_NAME,
+      </if>
+      <if test="createrUser != null" >
+        CREATER_USER,
+      </if>
+      <if test="createrTime != null" >
+        CREATER_TIME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="lastIndexTime != null" >
+        LAST_INDEX_TIME,
+      </if>
+      <if test="htmlContent != null" >
+        HTML_CONTENT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryId != null" >
+        #{categoryId,jdbcType=INTEGER},
+      </if>
+      <if test="categoryName != null" >
+        #{categoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="createrUser != null" >
+        #{createrUser,jdbcType=BIGINT},
+      </if>
+      <if test="createrTime != null" >
+        #{createrTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="lastIndexTime != null" >
+        #{lastIndexTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="htmlContent != null" >
+        #{htmlContent,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.livemore.model.article.Article" >
+    update article
+    <set >
+      <if test="title != null" >
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryId != null" >
+        CATEGORY_ID = #{categoryId,jdbcType=INTEGER},
+      </if>
+      <if test="categoryName != null" >
+        CATEGORY_NAME = #{categoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="createrUser != null" >
+        CREATER_USER = #{createrUser,jdbcType=BIGINT},
+      </if>
+      <if test="createrTime != null" >
+        CREATER_TIME = #{createrTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="lastIndexTime != null" >
+        LAST_INDEX_TIME = #{lastIndexTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="htmlContent != null" >
+        HTML_CONTENT = #{htmlContent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.livemore.model.article.Article" >
+    update article
+    set TITLE = #{title,jdbcType=VARCHAR},
+      CATEGORY_ID = #{categoryId,jdbcType=INTEGER},
+      CATEGORY_NAME = #{categoryName,jdbcType=VARCHAR},
+      CREATER_USER = #{createrUser,jdbcType=BIGINT},
+      CREATER_TIME = #{createrTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      LAST_INDEX_TIME = #{lastIndexTime,jdbcType=TIMESTAMP},
+      HTML_CONTENT = #{htmlContent,jdbcType=LONGVARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.livemore.model.article.Article" >
+    update article
+    set TITLE = #{title,jdbcType=VARCHAR},
+      CATEGORY_ID = #{categoryId,jdbcType=INTEGER},
+      CATEGORY_NAME = #{categoryName,jdbcType=VARCHAR},
+      CREATER_USER = #{createrUser,jdbcType=BIGINT},
+      CREATER_TIME = #{createrTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      LAST_INDEX_TIME = #{lastIndexTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

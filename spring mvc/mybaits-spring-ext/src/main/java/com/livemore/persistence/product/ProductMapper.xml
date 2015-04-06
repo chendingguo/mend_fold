@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.livemore.persistence.product.ProductMapper">
+	<resultMap id="BaseResultMap" type="com.livemore.model.product.Product">
+		<id column="ID" property="id" jdbcType="BIGINT" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="CATEGORY_ID" property="categoryId" jdbcType="BIGINT" />
+		<result column="CATEGORY_NAME" property="categoryName"
+			jdbcType="VARCHAR" />
+		<result column="PRICE" property="price" jdbcType="DECIMAL" />
+		<result column="INTRODUCE" property="introduce" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" jdbcType="INTEGER" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="CREATER_USER" property="createrUser" jdbcType="VARCHAR" />
+		<result column="CREATER_TIME" property="createrTime" jdbcType="TIMESTAMP" />
+		<collection property="pictureList" ofType="Picture">
+			<result property="path" column="PATH" />
+			<result property="remark" column="REMARK" />
+		</collection>
+	</resultMap>
+	<resultMap id="ResultMapWithBLOBs" type="com.livemore.model.product.Product"
+		extends="BaseResultMap">
+		<result column="INTRODUCE" property="introduce" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, NAME, INTRODUCE,CATEGORY_ID, CATEGORY_NAME, PRICE, STATUS, REMARK,
+		CREATER_USER, CREATER_TIME
+	</sql>
+	
+
+	<!-- =========================select list ============================= -->
+	<sql id="Where_Clause">
+		<where>
+			<if test="id !=null ">
+				AND ID = #{id}
+			</if>
+			<if test="name !=null ">
+				AND NAME = #{name}
+			</if>
+			
+			
+
+			<if test="categoryId != null">
+				AND CATEGORY_ID = #{categoryId}
+			</if>
+
+			<if test="categoryName != null">
+				AND CATEGORY_NAME = #{categoryName}
+			</if>
+
+			<if test="introduce != null">
+				AND INTRODUCE LIKE CONCAT('%',#{introduce},'%')
+			</if>
+
+		</where>
+
+	</sql>
+
+	<select id="selectProductList" parameterType="Product"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from product
+		<include refid="Where_Clause" />
+		<if test="sortColumn != null">
+			ORDER BY ${sortColumn}
+		</if>
+	</select>
+
+    <select id="selectProductById" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from product
+		where
+		ID=#{id}
+		
+	</select>
+	
+	<select id="selectProductListByPage" parameterType="Product"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from product
+		<include refid="Where_Clause" />
+		<if test="sortColumn != null">
+			ORDER BY ${sortColumn}
+		</if>
+	</select>
+	<!-- ============================================================================= -->
+	<select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		
+		from product
+		where ID = #{id,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from product
+		where ID = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.livemore.model.product.Product">
+		insert into product (ID, NAME, CATEGORY_ID,
+		CATEGORY_NAME, PRICE, STATUS,
+		REMARK, CREATER_USER, CREATER_TIME,
+		INTRODUCE)
+		values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
+		#{categoryId,jdbcType=BIGINT},
+		#{categoryName,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL}, #{status,jdbcType=INTEGER},
+		#{remark,jdbcType=VARCHAR}, #{createrUser,jdbcType=VARCHAR},
+		#{createrTime,jdbcType=TIMESTAMP},
+		#{introduce,jdbcType=LONGVARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.livemore.model.product.Product">
+		insert into product
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="name != null">
+				NAME,
+			</if>
+			<if test="categoryId != null">
+				CATEGORY_ID,
+			</if>
+			<if test="categoryName != null">
+				CATEGORY_NAME,
+			</if>
+			<if test="price != null">
+				PRICE,
+			</if>
+			<if test="status != null">
+				STATUS,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+			<if test="createrUser != null">
+				CREATER_USER,
+			</if>
+			<if test="createrTime != null">
+				CREATER_TIME,
+			</if>
+			<if test="introduce != null">
+				INTRODUCE,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="categoryId != null">
+				#{categoryId,jdbcType=BIGINT},
+			</if>
+			<if test="categoryName != null">
+				#{categoryName,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null">
+				#{price,jdbcType=DECIMAL},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="createrUser != null">
+				#{createrUser,jdbcType=VARCHAR},
+			</if>
+			<if test="createrTime != null">
+				#{createrTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="introduce != null">
+				#{introduce,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.livemore.model.product.Product">
+		update product
+		<set>
+			<if test="name != null">
+				NAME = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="categoryId != null">
+				CATEGORY_ID = #{categoryId,jdbcType=BIGINT},
+			</if>
+			<if test="categoryName != null">
+				CATEGORY_NAME = #{categoryName,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null">
+				PRICE = #{price,jdbcType=DECIMAL},
+			</if>
+			<if test="status != null">
+				STATUS = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="createrUser != null">
+				CREATER_USER = #{createrUser,jdbcType=VARCHAR},
+			</if>
+			<if test="createrTime != null">
+				CREATER_TIME = #{createrTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="introduce != null">
+				INTRODUCE = #{introduce,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.livemore.model.product.Product">
+		update product
+		set NAME = #{name,jdbcType=VARCHAR},
+		CATEGORY_ID = #{categoryId,jdbcType=BIGINT},
+		CATEGORY_NAME = #{categoryName,jdbcType=VARCHAR},
+		PRICE = #{price,jdbcType=DECIMAL},
+		STATUS = #{status,jdbcType=INTEGER},
+		REMARK = #{remark,jdbcType=VARCHAR},
+		CREATER_USER = #{createrUser,jdbcType=VARCHAR},
+		CREATER_TIME = #{createrTime,jdbcType=TIMESTAMP},
+		INTRODUCE = #{introduce,jdbcType=LONGVARCHAR}
+		where ID = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.livemore.model.product.Product">
+		update product
+		set NAME = #{name,jdbcType=VARCHAR},
+		CATEGORY_ID = #{categoryId,jdbcType=BIGINT},
+		CATEGORY_NAME = #{categoryName,jdbcType=VARCHAR},
+		PRICE = #{price,jdbcType=DECIMAL},
+		STATUS = #{status,jdbcType=INTEGER},
+		REMARK = #{remark,jdbcType=VARCHAR},
+		CREATER_USER = #{createrUser,jdbcType=VARCHAR},
+		CREATER_TIME = #{createrTime,jdbcType=TIMESTAMP}
+		where ID = #{id,jdbcType=BIGINT}
+	</update>
+</mapper>

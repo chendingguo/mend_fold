@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>文章管理</title>
+    <link rel="stylesheet" type="text/css" href="../../themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../../themes/icon.css">
+    <script type="text/javascript" src="../../js/framework/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../js/framework/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../js/framework/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="../../js/app.js"></script>
+    <script type="text/javascript" src="../../js/admin/article.js"></script>
+    <style>
+        body {
+            font-size: 22px;
+        }
+    </style>
+</head>
+
+<body onload="createTable()">
+
+    <div id="toolbar">
+        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newArticle()">新加文章</a>  <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeArticle()">删除文章</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="editArticle()">编辑文章</a>
+    </div>
+
+    <table id="dg" class="easyui-datagrid" width="400px" height="600px">
+
+
+    </table>
+
+
+
+
+
+    <div id="dlg" class="easyui-dialog" style="width: 1000px; height: 500px; left: 10px; top: 20px;" closed="true" resizable="true" buttons="#dlg-buttons">
+
+        <form id="article_from">
+            
+            <div class="fitem">
+                    <label>文章编号:</label>
+                    <input name="id" id="id" disabled="true" class="easyui-textbox" required="true">
+            </div>
+            <div class="fitem">
+                <label>文章标题:</label>
+            <input size="60" type="text"  name="title" id="title" placeholder="标题" />
+           </div>
+            <div class="fitem">
+                 <label>文章类别:</label>
+            <input size="60" type="text" id="categoryId"  name="categoryId" placeholder="请输入一个整数值" />
+             </div>
+            <textarea name="htmlContent" id="htmlContent" rows="10" cols="0">
+                This is my textarea to be replaced with CKEditor.
+            </textarea>
+
+        </form>
+    </div>
+
+    <div id="dlg-buttons">
+        <a href="#" id="save-article" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveArticle()">Save</a>  <a href="#" id="update-article" class="easyui-linkbutton" iconCls="icon-ok" onclick="updateArticle()">Update</a>  <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">Cancel</a>
+    </div>
+
+
+</body>
+
+</html>

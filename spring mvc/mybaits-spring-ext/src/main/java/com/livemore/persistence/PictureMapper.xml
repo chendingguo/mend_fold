@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.livemore.persistence.PictureMapper">
+	<resultMap id="BaseResultMap" type="com.livemore.model.Picture">
+		<id column="ID" property="id" jdbcType="BIGINT" />
+		<result column="PRODUCT_ID" property="productId" jdbcType="BIGINT" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="PATH" property="path" jdbcType="VARCHAR" />
+		<result column="CATEGORY" property="category" jdbcType="INTEGER" />
+		<result column="STATUS" property="status" jdbcType="INTEGER" />
+		<result column="ORDER_NUM" property="orderNum"
+			jdbcType="INTEGER" />
+		<result column="CREATE_USER_NAME" property="createUserName"
+			jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+		<result column="CREATE_USER_ID" property="createUserId"
+			jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PRODUCT_ID, NAME, PATH, CATEGORY,  STATUS,ORDER_NUM, CREATE_USER_NAME,
+		CREATE_TIME,
+		CREATE_USER_ID, REMARK
+	</sql>
+	<!-- =========================select list ============================= -->
+	<sql id="Where_Clause">
+		<where>
+			<if test="id !=null ">
+				AND ID = #{id}
+			</if>
+			<if test="productId !=null ">
+				AND PRODUCT_ID = #{productId}
+			</if>
+
+			<if test="name != null">
+				AND NAME = #{name}
+			</if>
+			
+			<if test="status != null">
+				AND STATUS = #{status}
+			</if>
+
+			<if test="path != null">
+				AND Path = #{path}
+			</if>
+
+		</where>
+	</sql>
+
+	<select id="selectPictureList" parameterType="Picture"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from picture
+		<include refid="Where_Clause" />
+		<if test="sortColumn != null">
+			ORDER BY ${sortColumn}
+		</if>
+	</select>
+
+
+	<select id="selectPictureListByPage" parameterType="Picture"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from picture
+		<include refid="Where_Clause" />
+		<if test="sortColumn != null">
+			ORDER BY ${sortColumn}
+		</if>
+	</select>
+	
+	<select id="selectTotalCount"  resultType="long"
+		parameterType="Picture">
+		select count(*)
+		from picture
+		<include refid="Where_Clause" />
+	</select>
+	<!-- ============================================================================= -->
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from picture
+		where ID = #{id,jdbcType=BIGINT}
+	</select>
+	
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from picture
+		where ID = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.livemore.model.Picture" useGeneratedKeys="true" keyProperty="id">
+		insert into picture (PRODUCT_ID, NAME,
+		PATH, CATEGORY, 
+		STATUS,ORDER_NUM, CREATE_USER_NAME, CREATE_TIME,
+		CREATE_USER_ID, REMARK)
+		values ( #{productId,jdbcType=BIGINT},
+		#{name,jdbcType=VARCHAR},
+		#{path,jdbcType=VARCHAR}, #{category,jdbcType=INTEGER}, 
+		#{status,jdbcType=INTEGER},#{orderNum,jdbcType=INTEGER}, #{createUserName,jdbcType=VARCHAR},
+		#{createTime,jdbcType=DATE},
+		#{createUserId,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.livemore.model.Picture">
+		insert into picture
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="productId != null">
+				PRODUCT_ID,
+			</if>
+			<if test="name != null">
+				NAME,
+			</if>
+			<if test="path != null">
+				PATH,
+			</if>
+			<if test="category != null">
+				CATEGORY,
+			</if>
+			
+			<if test="status != null">
+				STATUS,
+			</if>
+			
+			<if test="orderNum != null">
+				ORDER_NUM,
+			</if>
+			<if test="createUserName != null">
+				CREATE_USER_NAME,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME,
+			</if>
+			<if test="createUserId != null">
+				CREATE_USER_ID,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="productId != null">
+				#{productId,jdbcType=BIGINT},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="path != null">
+				#{path,jdbcType=VARCHAR},
+			</if>
+			<if test="category != null">
+				#{category,jdbcType=INTEGER},
+			</if>
+			
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			
+			<if test="orderNum != null">
+				#{orderNum,jdbcType=INTEGER},
+			</if>
+			<if test="createUserName != null">
+				#{createUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=DATE},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.livemore.model.Picture">
+		update picture
+		<set>
+			<if test="productId != null">
+				PRODUCT_ID = #{productId,jdbcType=BIGINT},
+			</if>
+			<if test="name != null">
+				NAME = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="path != null">
+				PATH = #{path,jdbcType=VARCHAR},
+			</if>
+			<if test="category != null">
+				CATEGORY = #{category,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				STATUS = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="orderNum != null">
+				ORDER_NUM = #{orderNum,jdbcType=INTEGER},
+			</if>
+			<if test="createUserName != null">
+				CREATE_USER_NAME = #{createUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME = #{createTime,jdbcType=DATE},
+			</if>
+			<if test="createUserId != null">
+				CREATE_USER_ID = #{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.livemore.model.Picture">
+		update picture
+		set PRODUCT_ID = #{productId,jdbcType=BIGINT},
+		NAME = #{name,jdbcType=VARCHAR},
+		PATH = #{path,jdbcType=VARCHAR},
+		CATEGORY = #{category,jdbcType=INTEGER},
+		STATUS = #{status,jdbcType=INTEGER},
+		ORDER_NUM = #{orderNum,jdbcType=INTEGER},
+		CREATE_USER_NAME = #{createUserName,jdbcType=VARCHAR},
+		CREATE_TIME = #{createTime,jdbcType=DATE},
+		CREATE_USER_ID = #{createUserId,jdbcType=VARCHAR},
+		REMARK = #{remark,jdbcType=VARCHAR}
+		where ID = #{id,jdbcType=BIGINT}
+	</update>
+</mapper>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>图片管理</title>
+
+<link rel="stylesheet" type="text/css"
+	href="../../themes/bootstrap/easyui.css">
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css">
+<script type="text/javascript"
+	src="../../js/framework/jquery-1.11.1.min.js"></script>
+<script type="text/javascript"
+	src="../../js/framework/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../js/app.js"></script>
+<script type="text/javascript" src="../../js/admin/pic_admin.js"></script>
+<script type="text/javascript" src="../../js/admin/pic_admin.js"></script>
+<style>
+body{
+  font-size:22px; 
+}
+</style>
+</head>
+<body onload="createTable()">
+  <div width="100%">
+ <div id="toolbar">
+		<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true"
+			onclick="newPicture()">新加图片</a>
+		<!-- <a href="#" class="easyui-linkbutton"
+			iconCls="icon-edit" plain="true" onclick="editPicture()">编辑图片</a> -->
+		<a href="#" class="easyui-linkbutton" iconCls="icon-remove"
+			plain="true" onclick="removePicture()">删除图片</a>
+	</div>
+
+	<table id="dg" class="easyui-datagrid" width="800px" height="800px" >
+
+
+	</table>
+
+
+
+
+
+	<div id="dlg" class="easyui-dialog"
+		style="width:500px;height:400px; left:10px; top:20px;" closed="true"
+		buttons="#dlg-buttons">
+
+		<form id="fm" method="post" enctype="multipart/form-data">
+			<div class="fitem">
+				<label>图片名称:</label> <input name="name" class="easyui-textbox"
+					required="true">
+			</div>
+
+
+
+			<div class="fitem">
+				<label>图片分类:</label> <input name="category" class="easyui-textbox"
+					required="true"><label>请填写一个整数</label>
+			</div>
+			<div class="fitem">
+				<label>备注信息:</label> <textarea name="remark" class="easyui-textbox"></textarea>
+			</div>
+
+
+			<div class="fitem">
+				<label>图片上传:</label> <input name="picfile" type="file"
+					onchange="previewImage(this)" class="easyui-textbox"
+					required="true">
+			</div>
+
+			<div id="preview">
+				<img id="imghead" width='200' height='200' border=0 src=''>
+			</div>
+		</form>
+	</div>
+
+	<div id="dlg-buttons">
+		<a href="#" id="save-picture" class="easyui-linkbutton"
+			iconCls="icon-ok" onclick="savePicture()">Save</a> <a href="#"
+			id="update-picture" class="easyui-linkbutton" iconCls="icon-ok"
+			onclick="updatePicture()">Update</a> <a href="#"
+			class="easyui-linkbutton" iconCls="icon-cancel"
+			onclick="javascript:$('#dlg').dialog('close')">Cancel</a>
+	</div>
+	
+	</div>
+</body>
+</html>

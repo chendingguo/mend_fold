@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.livemore.persistence.SystemModuleMapper" >
+  <resultMap id="BaseResultMap" type="com.livemore.model.SystemModule" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="PID" property="pid" jdbcType="BIGINT" />
+    <result column="TEXT" property="text" jdbcType="VARCHAR" />
+    <result column="VIEW_NAME" property="viewName" jdbcType="VARCHAR" />
+    <result column="ICON_CSS" property="iconCss" jdbcType="VARCHAR" />
+    <result column="CONTROLLER" property="controller" jdbcType="VARCHAR" />
+    <result column="LEAF" property="leaf" jdbcType="TINYINT" />
+    <result column="REMARKS" property="remarks" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, PID, TEXT, VIEW_NAME, ICON_CSS, CONTROLLER, LEAF, REMARKS
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from system_module
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from system_module
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.livemore.model.SystemModule" >
+    insert into system_module (ID, PID, TEXT, 
+      VIEW_NAME, ICON_CSS, CONTROLLER, 
+      LEAF, REMARKS)
+    values (#{id,jdbcType=BIGINT}, #{pid,jdbcType=BIGINT}, #{text,jdbcType=VARCHAR}, 
+      #{viewName,jdbcType=VARCHAR}, #{iconCss,jdbcType=VARCHAR}, #{controller,jdbcType=VARCHAR}, 
+      #{leaf,jdbcType=TINYINT}, #{remarks,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.livemore.model.SystemModule" >
+    insert into system_module
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="pid != null" >
+        PID,
+      </if>
+      <if test="text != null" >
+        TEXT,
+      </if>
+      <if test="viewName != null" >
+        VIEW_NAME,
+      </if>
+      <if test="iconCss != null" >
+        ICON_CSS,
+      </if>
+      <if test="controller != null" >
+        CONTROLLER,
+      </if>
+      <if test="leaf != null" >
+        LEAF,
+      </if>
+      <if test="remarks != null" >
+        REMARKS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=BIGINT},
+      </if>
+      <if test="text != null" >
+        #{text,jdbcType=VARCHAR},
+      </if>
+      <if test="viewName != null" >
+        #{viewName,jdbcType=VARCHAR},
+      </if>
+      <if test="iconCss != null" >
+        #{iconCss,jdbcType=VARCHAR},
+      </if>
+      <if test="controller != null" >
+        #{controller,jdbcType=VARCHAR},
+      </if>
+      <if test="leaf != null" >
+        #{leaf,jdbcType=TINYINT},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.livemore.model.SystemModule" >
+    update system_module
+    <set >
+      <if test="pid != null" >
+        PID = #{pid,jdbcType=BIGINT},
+      </if>
+      <if test="text != null" >
+        TEXT = #{text,jdbcType=VARCHAR},
+      </if>
+      <if test="viewName != null" >
+        VIEW_NAME = #{viewName,jdbcType=VARCHAR},
+      </if>
+      <if test="iconCss != null" >
+        ICON_CSS = #{iconCss,jdbcType=VARCHAR},
+      </if>
+      <if test="controller != null" >
+        CONTROLLER = #{controller,jdbcType=VARCHAR},
+      </if>
+      <if test="leaf != null" >
+        LEAF = #{leaf,jdbcType=TINYINT},
+      </if>
+      <if test="remarks != null" >
+        REMARKS = #{remarks,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.livemore.model.SystemModule" >
+    update system_module
+    set PID = #{pid,jdbcType=BIGINT},
+      TEXT = #{text,jdbcType=VARCHAR},
+      VIEW_NAME = #{viewName,jdbcType=VARCHAR},
+      ICON_CSS = #{iconCss,jdbcType=VARCHAR},
+      CONTROLLER = #{controller,jdbcType=VARCHAR},
+      LEAF = #{leaf,jdbcType=TINYINT},
+      REMARKS = #{remarks,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

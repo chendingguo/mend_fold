@@ -62,7 +62,7 @@ public class SchemaTreeModel extends DefaultTreeModel {
      * @param parent Parent element
      * @return List of children
      */
-    private List<Object> getChildList(Object parent) {
+    public List<Object> getChildList(Object parent) {
         if (parent instanceof MondrianGuiDef.Cube) {
             MondrianGuiDef.Cube c = (MondrianGuiDef.Cube) parent;
             // Return children in this order: fact table, dimensions, measures,

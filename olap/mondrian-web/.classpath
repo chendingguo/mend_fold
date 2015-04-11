@@ -34,5 +34,10 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="lib" path="E:/gitspace/mend_fold/olap/mondrian-web/lib/kettle-core.jar"/>
+	<classpathentry kind="lib" path="E:/gitspace/mend_fold/olap/mondrian-web/lib/kettle-dbdialog.jar"/>
+	<classpathentry kind="lib" path="E:/gitspace/mend_fold/olap/mondrian-web/lib/pentaho-xul-swing.jar"/>
+	<classpathentry kind="lib" path="E:/gitspace/mend_fold/olap/mondrian-web/lib/pentaho-application-launcher.jar"/>
+	<classpathentry kind="lib" path="E:/gitspace/mend_fold/olap/mondrian-web/lib/pentaho-xul-core.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -1,6 +1,11 @@
 package cube.edit.vo;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.json.JSONObject;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -15,8 +20,31 @@ public class TestSchema {
 		Schema schema=xml2Bean(input);
 		schema.setId("ddd");
 		//System.out.println(BeanUtil.buildString(schema,""));
+		JSONObject js=JSONObject.fromObject(schema);
 		
-		System.out.println(xStream.toXML(schema));
+		System.out.println(js.toString());
+		Map<String, Class> classMap = new HashMap<String, Class>();  
+		 
+		js=JSONObject.fromObject(js.toString());
+		classMap.put("dimensions", Dimension.class); 
+		classMap.put("hierarchies", Hierarchy.class); 
+		classMap.put("levels", Level.class); 
+		  
+		
+		Schema s=(Schema) JSONObject.toBean(js,Schema.class,classMap);
+		for(Dimension dimension:s.getDimensions()){
+			System.out.println(dimension.getName());
+			List<Hierarchy> hierarchies=dimension.getHierarchies();
+			for(Hierarchy hierarchy:hierarchies){
+				System.out.println("  "+hierarchy.getPrimaryKey());
+				List<Level> levels=hierarchy.getLevels();
+				for(Level level:levels){
+					System.out.println("      "+level.getColumn());
+				}
+			}
+		}
+		
+		//System.out.println(xStream.toXML(s));
 		
 	}
 

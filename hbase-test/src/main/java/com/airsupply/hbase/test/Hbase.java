@@ -350,7 +350,7 @@ public class Hbase {
 
 	public static void main(String[] args) throws Exception {
 		setConfig();
-		String tableName = "blog-test";
+		String tableName = "KYLIN_D13IX2Z0B0";
 		// createTable(tableName);
 		queryTable(tableName);
 

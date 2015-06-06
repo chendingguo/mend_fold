@@ -32,32 +32,36 @@ import java.io.File;
  * Table based on a JSON file.
  */
 public class JsonTable extends AbstractTable implements ScannableTable {
-  private final File file;
+	private final File file;
 
-  /** Creates a JsonTable. */
-  JsonTable(File file) {
-    this.file = file;
-  }
+	/** Creates a JsonTable. */
+	JsonTable(File file) {
+		this.file = file;
+	}
 
-  public String toString() {
-    return "JsonTable";
-  }
+	public String toString() {
+		return "JsonTable";
+	}
 
-  public RelDataType getRowType(RelDataTypeFactory typeFactory) {
-    return typeFactory.builder().add("_MAP",
-        typeFactory.createMapType(
-            typeFactory.createSqlType(SqlTypeName.VARCHAR),
-            typeFactory.createTypeWithNullability(
-                typeFactory.createSqlType(SqlTypeName.ANY), true))).build();
-  }
+	public RelDataType getRowType(RelDataTypeFactory typeFactory) {
+		return typeFactory
+				.builder()
+				.add("_MAP",
+						typeFactory.createMapType(
+								typeFactory.createSqlType(SqlTypeName.VARCHAR),
+								typeFactory.createTypeWithNullability(
+										typeFactory
+												.createSqlType(SqlTypeName.ANY),
+										true))).build();
+	}
 
-  public Enumerable<Object[]> scan(DataContext root) {
-    return new AbstractEnumerable<Object[]>() {
-      public Enumerator<Object[]> enumerator() {
-        return new JsonEnumerator(file);
-      }
-    };
-  }
+	public Enumerable<Object[]> scan(DataContext root) {
+		return new AbstractEnumerable<Object[]>() {
+			public Enumerator<Object[]> enumerator() {
+				return new JsonEnumerator(file);
+			}
+		};
+	}
 }
 
 // End JsonTable.java

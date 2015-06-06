@@ -27,33 +27,35 @@ import java.util.Map;
 /**
  * Factory that creates a {@link CsvSchema}.
  *
- * <p>Allows a custom schema to be included in a <code><i>model</i>.json</code>
- * file.</p>
+ * <p>
+ * Allows a custom schema to be included in a <code><i>model</i>.json</code>
+ * file.
+ * </p>
  */
 @SuppressWarnings("UnusedDeclaration")
 public class CsvSchemaFactory implements SchemaFactory {
-  // public constructor, per factory contract
-  public CsvSchemaFactory() {
-  }
+	// public constructor, per factory contract
+	public CsvSchemaFactory() {
+	}
 
-  public Schema create(SchemaPlus parentSchema, String name,
-      Map<String, Object> operand) {
-    final String directory = (String) operand.get("directory");
-    final File base =
-        (File) operand.get(ModelHandler.ExtraOperand.BASE_DIRECTORY.camelName);
-    File directoryFile = new File(directory);
-    if (base != null && !directoryFile.isAbsolute()) {
-      directoryFile = new File(base, directory);
-    }
-    String flavorName = (String) operand.get("flavor");
-    CsvTable.Flavor flavor;
-    if (flavorName == null) {
-      flavor = CsvTable.Flavor.SCANNABLE;
-    } else {
-      flavor = CsvTable.Flavor.valueOf(flavorName.toUpperCase());
-    }
-    return new CsvSchema(directoryFile, flavor);
-  }
+	public Schema create(SchemaPlus parentSchema, String name,
+			Map<String, Object> operand) {
+		final String directory = (String) operand.get("directory");
+		final File base = (File) operand
+				.get(ModelHandler.ExtraOperand.BASE_DIRECTORY.camelName);
+		File directoryFile = new File(directory);
+		if (base != null && !directoryFile.isAbsolute()) {
+			directoryFile = new File(base, directory);
+		}
+		String flavorName = (String) operand.get("flavor");
+		CsvTable.Flavor flavor;
+		if (flavorName == null) {
+			flavor = CsvTable.Flavor.SCANNABLE;
+		} else {
+			flavor = CsvTable.Flavor.valueOf(flavorName.toUpperCase());
+		}
+		return new CsvSchema(directoryFile, flavor);
+	}
 }
 
 // End CsvSchemaFactory.java

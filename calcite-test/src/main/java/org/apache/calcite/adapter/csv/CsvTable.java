@@ -30,35 +30,34 @@ import java.util.List;
  * Base class for table that reads CSV files.
  */
 public abstract class CsvTable extends AbstractTable {
-  protected final File file;
-  private final RelProtoDataType protoRowType;
-  protected List<CsvFieldType> fieldTypes;
+	protected final File file;
+	private final RelProtoDataType protoRowType;
+	protected List<CsvFieldType> fieldTypes;
 
-  /** Creates a CsvAbstractTable. */
-  CsvTable(File file, RelProtoDataType protoRowType) {
-    this.file = file;
-    this.protoRowType = protoRowType;
-  }
+	/** Creates a CsvAbstractTable. */
+	CsvTable(File file, RelProtoDataType protoRowType) {
+		this.file = file;
+		this.protoRowType = protoRowType;
+	}
 
-  public RelDataType getRowType(RelDataTypeFactory typeFactory) {
-    if (protoRowType != null) {
-      return protoRowType.apply(typeFactory);
-    }
-    if (fieldTypes == null) {
-      fieldTypes = new ArrayList<CsvFieldType>();
-      return CsvEnumerator.deduceRowType((JavaTypeFactory) typeFactory, file,
-          fieldTypes);
-    } else {
-      return CsvEnumerator.deduceRowType((JavaTypeFactory) typeFactory,
-          file,
-          null);
-    }
-  }
+	public RelDataType getRowType(RelDataTypeFactory typeFactory) {
+		if (protoRowType != null) {
+			return protoRowType.apply(typeFactory);
+		}
+		if (fieldTypes == null) {
+			fieldTypes = new ArrayList<CsvFieldType>();
+			return CsvEnumerator.deduceRowType((JavaTypeFactory) typeFactory,
+					file, fieldTypes);
+		} else {
+			return CsvEnumerator.deduceRowType((JavaTypeFactory) typeFactory,
+					file, null);
+		}
+	}
 
-  /** Various degrees of table "intelligence". */
-  public enum Flavor {
-    SCANNABLE, FILTERABLE, TRANSLATABLE
-  }
+	/** Various degrees of table "intelligence". */
+	public enum Flavor {
+		SCANNABLE, FILTERABLE, TRANSLATABLE
+	}
 }
 
 // End CsvTable.java

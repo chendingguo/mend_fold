@@ -36,50 +36,53 @@ import java.lang.reflect.Type;
 /**
  * Table based on a CSV file.
  */
-public class CsvTranslatableTable extends CsvTable
-    implements QueryableTable, TranslatableTable {
-  /** Creates a CsvTable. */
-  CsvTranslatableTable(File file, RelProtoDataType protoRowType) {
-    super(file, protoRowType);
-  }
+public class CsvTranslatableTable extends CsvTable implements QueryableTable,
+		TranslatableTable {
+	/** Creates a CsvTable. */
+	CsvTranslatableTable(File file, RelProtoDataType protoRowType) {
+		super(file, protoRowType);
+	}
 
-  public String toString() {
-    return "CsvTranslatableTable";
-  }
+	public String toString() {
+		return "CsvTranslatableTable";
+	}
 
-  /** Returns an enumerable over a given projection of the fields.
-   *
-   * <p>Called from generated code. */
-  public Enumerable<Object> project(final int[] fields) {
-    return new AbstractEnumerable<Object>() {
-      public Enumerator<Object> enumerator() {
-        return new CsvEnumerator<Object>(file, fieldTypes, fields);
-      }
-    };
-  }
+	/**
+	 * Returns an enumerable over a given projection of the fields.
+	 *
+	 * <p>
+	 * Called from generated code.
+	 */
+	public Enumerable<Object> project(final int[] fields) {
+		return new AbstractEnumerable<Object>() {
+			public Enumerator<Object> enumerator() {
+				return new CsvEnumerator<Object>(file, fieldTypes, fields);
+			}
+		};
+	}
 
-  public Expression getExpression(SchemaPlus schema, String tableName,
-      Class clazz) {
-    return Schemas.tableExpression(schema, getElementType(), tableName, clazz);
-  }
+	public Expression getExpression(SchemaPlus schema, String tableName,
+			Class clazz) {
+		return Schemas.tableExpression(schema, getElementType(), tableName,
+				clazz);
+	}
 
-  public Type getElementType() {
-    return Object[].class;
-  }
+	public Type getElementType() {
+		return Object[].class;
+	}
 
-  public <T> Queryable<T> asQueryable(QueryProvider queryProvider,
-      SchemaPlus schema, String tableName) {
-    throw new UnsupportedOperationException();
-  }
+	public <T> Queryable<T> asQueryable(QueryProvider queryProvider,
+			SchemaPlus schema, String tableName) {
+		throw new UnsupportedOperationException();
+	}
 
-  public RelNode toRel(
-      RelOptTable.ToRelContext context,
-      RelOptTable relOptTable) {
-    // Request all fields.
-    final int fieldCount = relOptTable.getRowType().getFieldCount();
-    final int[] fields = CsvEnumerator.identityList(fieldCount);
-    return new CsvTableScan(context.getCluster(), relOptTable, this, fields);
-  }
+	public RelNode toRel(RelOptTable.ToRelContext context,
+			RelOptTable relOptTable) {
+		// Request all fields.
+		final int fieldCount = relOptTable.getRowType().getFieldCount();
+		final int[] fields = CsvEnumerator.identityList(fieldCount);
+		return new CsvTableScan(context.getCluster(), relOptTable, this, fields);
+	}
 }
 
 // End CsvTranslatableTable.java

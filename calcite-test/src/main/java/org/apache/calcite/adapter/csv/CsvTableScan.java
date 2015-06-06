@@ -40,65 +40,63 @@ import java.util.List;
 /**
  * Relational expression representing a scan of a CSV file.
  *
- * <p>Like any table scan, it serves as a leaf node of a query tree.</p>
+ * <p>
+ * Like any table scan, it serves as a leaf node of a query tree.
+ * </p>
  */
 public class CsvTableScan extends TableScan implements EnumerableRel {
-  final CsvTranslatableTable csvTable;
-  final int[] fields;
+	final CsvTranslatableTable csvTable;
+	final int[] fields;
 
-  protected CsvTableScan(RelOptCluster cluster, RelOptTable table,
-      CsvTranslatableTable csvTable, int[] fields) {
-    super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), table);
-    this.csvTable = csvTable;
-    this.fields = fields;
+	protected CsvTableScan(RelOptCluster cluster, RelOptTable table,
+			CsvTranslatableTable csvTable, int[] fields) {
+		super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), table);
+		this.csvTable = csvTable;
+		this.fields = fields;
 
-    assert csvTable != null;
-  }
+		assert csvTable != null;
+	}
 
-  @Override public RelNode copy(RelTraitSet traitSet, List<RelNode> inputs) {
-    assert inputs.isEmpty();
-    return new CsvTableScan(getCluster(), table, csvTable, fields);
-  }
+	@Override
+	public RelNode copy(RelTraitSet traitSet, List<RelNode> inputs) {
+		assert inputs.isEmpty();
+		return new CsvTableScan(getCluster(), table, csvTable, fields);
+	}
 
-  @Override public RelWriter explainTerms(RelWriter pw) {
-    return super.explainTerms(pw)
-        .item("fields", Primitive.asList(fields));
-  }
+	@Override
+	public RelWriter explainTerms(RelWriter pw) {
+		return super.explainTerms(pw).item("fields", Primitive.asList(fields));
+	}
 
-  @Override public RelDataType deriveRowType() {
-    final List<RelDataTypeField> fieldList = table.getRowType().getFieldList();
-    final RelDataTypeFactory.FieldInfoBuilder builder =
-        getCluster().getTypeFactory().builder();
-    for (int field : fields) {
-      builder.add(fieldList.get(field));
-    }
-    return builder.build();
-  }
+	@Override
+	public RelDataType deriveRowType() {
+		final List<RelDataTypeField> fieldList = table.getRowType()
+				.getFieldList();
+		final RelDataTypeFactory.FieldInfoBuilder builder = getCluster()
+				.getTypeFactory().builder();
+		for (int field : fields) {
+			builder.add(fieldList.get(field));
+		}
+		return builder.build();
+	}
 
-  @Override public void register(RelOptPlanner planner) {
-    planner.addRule(CsvProjectTableScanRule.INSTANCE);
-  }
+	@Override
+	public void register(RelOptPlanner planner) {
+		planner.addRule(CsvProjectTableScanRule.INSTANCE);
+	}
 
-  public Result implement(EnumerableRelImplementor implementor, Prefer pref) {
-    PhysType physType =
-        PhysTypeImpl.of(
-            implementor.getTypeFactory(),
-            getRowType(),
-            pref.preferArray());
+	public Result implement(EnumerableRelImplementor implementor, Prefer pref) {
+		PhysType physType = PhysTypeImpl.of(implementor.getTypeFactory(),
+				getRowType(), pref.preferArray());
 
-    if (table instanceof JsonTable) {
-      return implementor.result(
-          physType,
-          Blocks.toBlock(
-              Expressions.call(table.getExpression(JsonTable.class),
-                  "enumerable")));
-    }
-    return implementor.result(
-        physType,
-        Blocks.toBlock(
-            Expressions.call(table.getExpression(CsvTranslatableTable.class),
-                "project", Expressions.constant(fields))));
-  }
+		if (table instanceof JsonTable) {
+			return implementor.result(physType, Blocks.toBlock(Expressions
+					.call(table.getExpression(JsonTable.class), "enumerable")));
+		}
+		return implementor.result(physType, Blocks.toBlock(Expressions.call(
+				table.getExpression(CsvTranslatableTable.class), "project",
+				Expressions.constant(fields))));
+	}
 }
 
 // End CsvTableScan.java

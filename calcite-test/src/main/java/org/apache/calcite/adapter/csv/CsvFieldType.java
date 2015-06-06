@@ -26,52 +26,47 @@ import java.util.Map;
 /**
  * Type of a field in a CSV file.
  *
- * <p>Usually, and unless specified explicitly in the header row, a field is
- * of type {@link #STRING}. But specifying the field type in the header row
- * makes it easier to write SQL.</p>
+ * <p>
+ * Usually, and unless specified explicitly in the header row, a field is of
+ * type {@link #STRING}. But specifying the field type in the header row makes
+ * it easier to write SQL.
+ * </p>
  */
 enum CsvFieldType {
-  STRING(String.class, "string"),
-  BOOLEAN(Primitive.BOOLEAN),
-  BYTE(Primitive.BYTE),
-  CHAR(Primitive.CHAR),
-  SHORT(Primitive.SHORT),
-  INT(Primitive.INT),
-  LONG(Primitive.LONG),
-  FLOAT(Primitive.FLOAT),
-  DOUBLE(Primitive.DOUBLE),
-  DATE(java.sql.Date.class, "date"),
-  TIME(java.sql.Time.class, "time"),
-  TIMESTAMP(java.sql.Timestamp.class, "timestamp");
+	STRING(String.class, "string"), BOOLEAN(Primitive.BOOLEAN), BYTE(
+			Primitive.BYTE), CHAR(Primitive.CHAR), SHORT(Primitive.SHORT), INT(
+			Primitive.INT), LONG(Primitive.LONG), FLOAT(Primitive.FLOAT), DOUBLE(
+			Primitive.DOUBLE), DATE(java.sql.Date.class, "date"), TIME(
+			java.sql.Time.class, "time"), TIMESTAMP(java.sql.Timestamp.class,
+			"timestamp");
 
-  private final Class clazz;
-  private final String simpleName;
+	private final Class clazz;
+	private final String simpleName;
 
-  private static final Map<String, CsvFieldType> MAP =
-    new HashMap<String, CsvFieldType>();
+	private static final Map<String, CsvFieldType> MAP = new HashMap<String, CsvFieldType>();
 
-  static {
-    for (CsvFieldType value : values()) {
-      MAP.put(value.simpleName, value);
-    }
-  }
+	static {
+		for (CsvFieldType value : values()) {
+			MAP.put(value.simpleName, value);
+		}
+	}
 
-  CsvFieldType(Primitive primitive) {
-    this(primitive.boxClass, primitive.primitiveClass.getSimpleName());
-  }
+	CsvFieldType(Primitive primitive) {
+		this(primitive.boxClass, primitive.primitiveClass.getSimpleName());
+	}
 
-  CsvFieldType(Class clazz, String simpleName) {
-    this.clazz = clazz;
-    this.simpleName = simpleName;
-  }
+	CsvFieldType(Class clazz, String simpleName) {
+		this.clazz = clazz;
+		this.simpleName = simpleName;
+	}
 
-  public RelDataType toType(JavaTypeFactory typeFactory) {
-    return typeFactory.createJavaType(clazz);
-  }
+	public RelDataType toType(JavaTypeFactory typeFactory) {
+		return typeFactory.createJavaType(clazz);
+	}
 
-  public static CsvFieldType of(String typeString) {
-    return MAP.get(typeString);
-  }
+	public static CsvFieldType of(String typeString) {
+		return MAP.get(typeString);
+	}
 }
 
 // End CsvFieldType.java

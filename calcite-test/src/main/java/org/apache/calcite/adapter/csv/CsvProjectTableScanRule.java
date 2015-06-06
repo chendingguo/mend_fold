@@ -30,44 +30,41 @@ import java.util.List;
  * the projection is removed.
  */
 public class CsvProjectTableScanRule extends RelOptRule {
-  public static final CsvProjectTableScanRule INSTANCE =
-      new CsvProjectTableScanRule();
+	public static final CsvProjectTableScanRule INSTANCE = new CsvProjectTableScanRule();
 
-  private CsvProjectTableScanRule() {
-    super(
-        operand(LogicalProject.class,
-            operand(CsvTableScan.class, none())),
-        "CsvProjectTableScanRule");
-  }
+	private CsvProjectTableScanRule() {
+		super(
+				operand(LogicalProject.class,
+						operand(CsvTableScan.class, none())),
+				"CsvProjectTableScanRule");
+	}
 
-  @Override public void onMatch(RelOptRuleCall call) {
-    final LogicalProject project = call.rel(0);
-    final CsvTableScan scan = call.rel(1);
-    int[] fields = getProjectFields(project.getProjects());
-    if (fields == null) {
-      // Project contains expressions more complex than just field references.
-      return;
-    }
-    call.transformTo(
-        new CsvTableScan(
-            scan.getCluster(),
-            scan.getTable(),
-            scan.csvTable,
-            fields));
-  }
+	@Override
+	public void onMatch(RelOptRuleCall call) {
+		final LogicalProject project = call.rel(0);
+		final CsvTableScan scan = call.rel(1);
+		int[] fields = getProjectFields(project.getProjects());
+		if (fields == null) {
+			// Project contains expressions more complex than just field
+			// references.
+			return;
+		}
+		call.transformTo(new CsvTableScan(scan.getCluster(), scan.getTable(),
+				scan.csvTable, fields));
+	}
 
-  private int[] getProjectFields(List<RexNode> exps) {
-    final int[] fields = new int[exps.size()];
-    for (int i = 0; i < exps.size(); i++) {
-      final RexNode exp = exps.get(i);
-      if (exp instanceof RexInputRef) {
-        fields[i] = ((RexInputRef) exp).getIndex();
-      } else {
-        return null; // not a simple projection
-      }
-    }
-    return fields;
-  }
+	private int[] getProjectFields(List<RexNode> exps) {
+		final int[] fields = new int[exps.size()];
+		for (int i = 0; i < exps.size(); i++) {
+			final RexNode exp = exps.get(i);
+			if (exp instanceof RexInputRef) {
+				fields[i] = ((RexInputRef) exp).getIndex();
+			} else {
+				return null; // not a simple projection
+			}
+		}
+		return fields;
+	}
 }
 
 // End CsvProjectTableScanRule.java

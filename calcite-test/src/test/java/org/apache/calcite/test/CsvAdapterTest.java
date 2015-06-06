@@ -38,7 +38,7 @@ import java.util.Properties;
 /**
  * Unit test of the Calcite adapter for CSV.
  */
-public class CsvTest {
+public class CsvAdapterTest {
 	private void close(Connection connection, Statement statement) {
 		if (statement != null) {
 			try {
@@ -64,7 +64,6 @@ public class CsvTest {
 	 * Tests the vanity driver.
 	 */
 	@Ignore
-	
 	public void testVanityDriver() throws SQLException {
 		Properties info = new Properties();
 		Connection connection = DriverManager.getConnection("jdbc:csv:", info);
@@ -75,7 +74,6 @@ public class CsvTest {
 	 * Tests the vanity driver with properties in the URL.
 	 */
 	@Ignore
-	
 	public void testVanityDriverArgsInUrl() throws SQLException {
 		Connection connection = DriverManager.getConnection("jdbc:csv:"
 				+ "directory='foo'");
@@ -83,7 +81,7 @@ public class CsvTest {
 	}
 
 	/** Tests an inline schema with a non-existent directory. */
-	
+
 	public void testBadDirectory() throws SQLException {
 		Properties info = new Properties();
 		info.put(
@@ -110,24 +108,18 @@ public class CsvTest {
 		connection.close();
 	}
 
-	
-
-	
 	public void testSelectSingleProjectGz() throws SQLException {
 		checkSql("smart", "select name from EMPS");
 	}
 
-	
 	public void testSelectSingleProject() throws SQLException {
 		checkSql("smart", "select name from DEPTS");
 	}
 
-	
 	public void testCustomTable() throws SQLException {
 		checkSql("model-with-custom-table", "select * from CUSTOM_TABLE.EMPS");
 	}
 
-	
 	public void testPushDownProjectDumb() throws SQLException {
 		// rule does not fire, because we're using 'dumb' tables in simple model
 		checkSql("model", "explain plan for select * from EMPS",
@@ -135,7 +127,6 @@ public class CsvTest {
 						+ "  BindableTableScan(table=[[SALES, EMPS]])\n");
 	}
 
-	
 	public void testPushDownProject() throws SQLException {
 		checkSql(
 				"smart",
@@ -143,7 +134,6 @@ public class CsvTest {
 				"PLAN=CsvTableScan(table=[[SALES, EMPS]], fields=[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]])\n");
 	}
 
-	
 	public void testPushDownProject2() throws SQLException {
 		checkSql("smart", "explain plan for select name, empno from EMPS",
 				"PLAN=CsvTableScan(table=[[SALES, EMPS]], fields=[[1, 0]])\n");
@@ -154,18 +144,16 @@ public class CsvTest {
 				"NAME=Alice; EMPNO=130");
 	}
 
-	
 	public void testFilterableSelect() throws SQLException {
 		checkSql("filterable-model", "select name from EMPS");
 	}
 
-	
 	public void testFilterableSelectStar() throws SQLException {
 		checkSql("filterable-model", "select * from EMPS");
 	}
 
 	/** Filter that can be fully handled by CsvFilterableTable. */
-	
+
 	public void testFilterableWhere() throws SQLException {
 		checkSql("filterable-model",
 				"select empno, gender, name from EMPS where name = 'John'",
@@ -173,7 +161,7 @@ public class CsvTest {
 	}
 
 	/** Filter that can be partly handled by CsvFilterableTable. */
-	
+
 	public void testFilterableWhere2() throws SQLException {
 		checkSql(
 				"filterable-model",
@@ -181,7 +169,6 @@ public class CsvTest {
 				"EMPNO=130; GENDER=F; NAME=Alice");
 	}
 
-	
 	public void testJson() throws SQLException {
 		checkSql("bug", "select _MAP['id'] as id,\n"
 				+ " _MAP['title'] as title,\n"
@@ -222,7 +209,7 @@ public class CsvTest {
 			public Void apply(ResultSet resultSet) {
 				try {
 					final List<String> lines = new ArrayList<String>();
-					CsvTest.collect(lines, resultSet);
+					CsvAdapterTest.collect(lines, resultSet);
 					Assert.assertEquals(Arrays.asList(expected), lines);
 				} catch (SQLException e) {
 					throw new RuntimeException(e);
@@ -249,7 +236,7 @@ public class CsvTest {
 	}
 
 	private String jsonPath(String model) {
-		final URL url = CsvTest.class.getResource("/" + model + ".json");
+		final URL url = CsvAdapterTest.class.getResource("/" + model + ".json");
 		String s = url.toString();
 		if (s.startsWith("file:")) {
 			s = s.substring("file:".length());
@@ -291,13 +278,11 @@ public class CsvTest {
 		}
 	}
 
-	
 	public void testJoinOnString() throws SQLException {
 		checkSql("smart",
 				"select * from emps join depts on emps.name = depts.name");
 	}
 
-	
 	public void testWackyColumns() throws SQLException {
 		checkSql("select * from wacky_column_names where false", "bug",
 				expect());
@@ -308,13 +293,11 @@ public class CsvTest {
 						"joined at=2007-01-01; naME=Alice"));
 	}
 
-	
 	public void testBoolean() throws SQLException {
 		checkSql("smart", "select empno, slacker from emps where slacker",
 				"EMPNO=100; SLACKER=true");
 	}
 
-	
 	public void testReadme() throws SQLException {
 		checkSql("SELECT d.name, COUNT(*) cnt" + " FROM emps AS e"
 				+ " JOIN depts AS d ON e.deptno = d.deptno"
@@ -322,7 +305,6 @@ public class CsvTest {
 				expect("NAME=Sales; CNT=1", "NAME=Marketing; CNT=2"));
 	}
 
-	
 	public void testDateType() throws SQLException {
 		Properties info = new Properties();
 		info.put("model", jsonPath("bug"));
@@ -375,8 +357,7 @@ public class CsvTest {
 			connection.close();
 		}
 	}
-	
-	
+
 	/**
 	 * Reads from a table.
 	 */

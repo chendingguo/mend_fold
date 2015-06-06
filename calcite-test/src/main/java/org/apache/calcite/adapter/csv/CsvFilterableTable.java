@@ -35,56 +35,56 @@ import java.util.List;
 /**
  * Table based on a CSV file that can implement simple filtering.
  *
- * <p>It implements the {@link FilterableTable} interface, so Calcite gets
- * data by calling the {@link #scan(DataContext, List)} method.
+ * <p>
+ * It implements the {@link FilterableTable} interface, so Calcite gets data by
+ * calling the {@link #scan(DataContext, List)} method.
  */
-public class CsvFilterableTable extends CsvTable
-    implements FilterableTable {
-  /** Creates a CsvFilterableTable. */
-  CsvFilterableTable(File file, RelProtoDataType protoRowType) {
-    super(file, protoRowType);
-  }
+public class CsvFilterableTable extends CsvTable implements FilterableTable {
+	/** Creates a CsvFilterableTable. */
+	CsvFilterableTable(File file, RelProtoDataType protoRowType) {
+		super(file, protoRowType);
+	}
 
-  public String toString() {
-    return "CsvFilterableTable";
-  }
+	public String toString() {
+		return "CsvFilterableTable";
+	}
 
-  public Enumerable<Object[]> scan(DataContext root, List<RexNode> filters) {
-    final String[] filterValues = new String[fieldTypes.size()];
-    for (final Iterator<RexNode> i = filters.iterator(); i.hasNext();) {
-      final RexNode filter = i.next();
-      if (addFilter(filter, filterValues)) {
-        i.remove();
-      }
-    }
-    final int[] fields = CsvEnumerator.identityList(fieldTypes.size());
-    return new AbstractEnumerable<Object[]>() {
-      public Enumerator<Object[]> enumerator() {
-        return new CsvEnumerator<Object[]>(file, filterValues,
-            new CsvEnumerator.ArrayRowConverter(fieldTypes, fields));
-      }
-    };
-  }
+	public Enumerable<Object[]> scan(DataContext root, List<RexNode> filters) {
+		final String[] filterValues = new String[fieldTypes.size()];
+		for (final Iterator<RexNode> i = filters.iterator(); i.hasNext();) {
+			final RexNode filter = i.next();
+			if (addFilter(filter, filterValues)) {
+				i.remove();
+			}
+		}
+		final int[] fields = CsvEnumerator.identityList(fieldTypes.size());
+		return new AbstractEnumerable<Object[]>() {
+			public Enumerator<Object[]> enumerator() {
+				return new CsvEnumerator<Object[]>(file, filterValues,
+						new CsvEnumerator.ArrayRowConverter(fieldTypes, fields));
+			}
+		};
+	}
 
-  private boolean addFilter(RexNode filter, Object[] filterValues) {
-    if (filter.isA(SqlKind.EQUALS)) {
-      final RexCall call = (RexCall) filter;
-      RexNode left = call.getOperands().get(0);
-      if (left.isA(SqlKind.CAST)) {
-        left = ((RexCall) left).operands.get(0);
-      }
-      final RexNode right = call.getOperands().get(1);
-      if (left instanceof RexInputRef
-          && right instanceof RexLiteral) {
-        final int index = ((RexInputRef) left).getIndex();
-        if (filterValues[index] == null) {
-          filterValues[index] = ((RexLiteral) right).getValue2().toString();
-          return true;
-        }
-      }
-    }
-    return false;
-  }
+	private boolean addFilter(RexNode filter, Object[] filterValues) {
+		if (filter.isA(SqlKind.EQUALS)) {
+			final RexCall call = (RexCall) filter;
+			RexNode left = call.getOperands().get(0);
+			if (left.isA(SqlKind.CAST)) {
+				left = ((RexCall) left).operands.get(0);
+			}
+			final RexNode right = call.getOperands().get(1);
+			if (left instanceof RexInputRef && right instanceof RexLiteral) {
+				final int index = ((RexInputRef) left).getIndex();
+				if (filterValues[index] == null) {
+					filterValues[index] = ((RexLiteral) right).getValue2()
+							.toString();
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }
 
 // End CsvFilterableTable.java

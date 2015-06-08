@@ -34,7 +34,6 @@ import java.util.Map;
  * is not based upon {@link CsvSchema}.
  * </p>
  */
-@SuppressWarnings("UnusedDeclaration")
 public class CsvTableFactory implements TableFactory<CsvTable> {
 	// public constructor, per factory contract
 	public CsvTableFactory() {

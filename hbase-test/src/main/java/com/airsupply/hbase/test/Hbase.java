@@ -302,22 +302,34 @@ public class Hbase {
 				Map<String, Object> map = new TreeMap<String, Object>();
 				if (ceList != null && ceList.size() > 0) {
 					for (Cell cell : ceList) {
-						map.put(Bytes.toString(cell.getRowArray(),
-								cell.getRowOffset(), cell.getRowLength())
-								+ ":"
-								+ Bytes.toString(cell.getFamilyArray(),
-										cell.getFamilyOffset(),
-										cell.getFamilyLength())
-								+ "_"
-								+ Bytes.toString(cell.getQualifierArray(),
-										cell.getQualifierOffset(),
-										cell.getQualifierLength()),
-								Bytes.toString(cell.getValueArray(),
-										cell.getValueOffset(),
-										cell.getValueLength()));
+
+						String rowKey = Bytes.toString(cell.getRowArray(),
+								cell.getRowOffset(), cell.getRowLength());
+						if (rowKey.endsWith(".json")) {
+							map.put(rowKey
+									+ ":"
+									+ Bytes.toString(cell.getFamilyArray(),
+											cell.getFamilyOffset(),
+											cell.getFamilyLength())
+									+ "_"
+									+ Bytes.toString(cell.getQualifierArray(),
+											cell.getQualifierOffset(),
+											cell.getQualifierLength()), Bytes
+									.toString(cell.getValueArray(),
+											cell.getValueOffset(),
+											cell.getValueLength()));
+							System.out.println(rowKey);
+							System.out.println("--------------------");
+							
+							System.out.println(Bytes
+									.toString(cell.getValueArray(),
+											cell.getValueOffset(),
+											cell.getValueLength()));
+
+						}
 
 					}
-					System.out.println(map);
+					//System.out.println(map);
 				}
 
 			}
@@ -350,7 +362,7 @@ public class Hbase {
 
 	public static void main(String[] args) throws Exception {
 		setConfig();
-		String tableName = "KYLIN_D13IX2Z0B0";
+		String tableName = "kylin_metadata";
 		// createTable(tableName);
 		queryTable(tableName);
 

@@ -1,0 +1,16 @@
+<dataConfig>  
+ <dataSource type="JdbcDataSource" driver="com.mysql.jdbc.Driver"    
+   url="jdbc:mysql://172.16.251.201:3306/myproject"    
+   user="root"    
+   password="123456"/>  
+   <document name="search_employee">  
+      <entity name="employee" pk="empid"
+  	   query="select * from employee">    
+          <field column="empid" name="empid" />    
+          <field column="depno" name="depno" />    
+          <field column="name" name="name" />
+          <field column="salary" name="salary">
+         		  
+      </entity>  
+ </document>   
+</dataConfig> 

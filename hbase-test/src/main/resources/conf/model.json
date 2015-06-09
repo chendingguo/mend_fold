@@ -1,0 +1,20 @@
+{
+    "version": "1.0",
+    "defaultSchema": "DEFAULT",
+    "schemas": [
+        {
+            "type": "custom",
+            "name": "DEFAULT",
+            "factory": "org.apache.kylin.query.schema.OLAPSchemaFactory",
+            "operand": {
+                "project": "LEARN_KYLIN"
+            },
+           "functions": [
+                 {
+                     "name": "QUARTER",
+                     "className": "org.apache.kylin.query.sqlfunc.QuarterFunc"
+                 }
+            ]
+        }
+    ]
+}

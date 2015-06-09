@@ -82,7 +82,8 @@ public class CsvTableScan extends TableScan implements EnumerableRel {
 
 	@Override
 	public void register(RelOptPlanner planner) {
-		planner.addRule(CsvProjectTableScanRule.INSTANCE);
+		//planner.addRule(CsvProjectTableScanRule.INSTANCE);
+		//planner.addRule(CsvLimitRule.INSTANCE);
 	}
 
 	public Result implement(EnumerableRelImplementor implementor, Prefer pref) {

@@ -363,7 +363,7 @@ public class CsvAdapterTest {
 	 */
 	@Test
 	public void testSelect() throws SQLException {
-		checkSql("model", "select * from DEPTS order by NAME DESC");
+		checkSql("smart", "select * from DEPTS ,EMPS");
 	}
 }
 

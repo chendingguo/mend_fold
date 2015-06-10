@@ -99,6 +99,7 @@ class SolrEnumerator<E> implements Enumerator<E> {
 	}
 
 	/**
+	 * TODO: 
 	 * get the date type of table
 	 * 
 	 * @param typeFactory

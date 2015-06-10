@@ -146,7 +146,7 @@ public class SolrAdapterTest {
 	}
 
 	/**
-	 * Reads from a table.
+	 * get the sql excute result
 	 */
 	@Test
 	public void testSelect() throws SQLException {

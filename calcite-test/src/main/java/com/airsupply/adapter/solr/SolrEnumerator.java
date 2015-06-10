@@ -39,6 +39,7 @@ import au.com.bytecode.opencsv.CSVReader;
  *            rowtype
  */
 class SolrEnumerator<E> implements Enumerator<E> {
+	private static String JSON_SUFFIX = ".json";
 	private static String ip;
 	private static int port;
 	private static String coreName;
@@ -73,9 +74,11 @@ class SolrEnumerator<E> implements Enumerator<E> {
 	public SolrEnumerator(File file, String[] filterValues,
 			RowConverter<E> rowConverter) {
 		this.rowConverter = rowConverter;
-
-		SolrClient solrClient = SolrClientFactory.getSolrClient(ip, port,
-				coreName);
+		String configFileName = file.getName().split("[.]")[0] + JSON_SUFFIX;
+		String configFilePath = file.getParentFile().getAbsolutePath() + "/"
+				+ configFileName;
+		String connUrl = SolrAdapterUtil.getConnectUrl(configFilePath);
+		SolrClient solrClient = SolrClientFactory.getSolrClient(connUrl);
 		QueryResponse resp = null;
 		try {
 			resp = solrClient.query(new SolrQuery("*:*"));
@@ -109,16 +112,6 @@ class SolrEnumerator<E> implements Enumerator<E> {
 		CSVReader reader = null;
 		try {
 			reader = openCsv(file);
-			final String[] connectInfoArray = reader.readNext();
-			if (connectInfoArray.length == 3) {
-               ip=connectInfoArray[0];
-               port=Integer.valueOf(connectInfoArray[1]);
-               coreName=connectInfoArray[2];
-             //  System.out.println( "--|connect info:"+ip+":"+port+":"+coreName);
-               
-			}else{
-				System.err.println("Invalid connect info format  eg: ip,port,corename");
-			}
 			final String[] strings = reader.readNext();
 			for (String string : strings) {
 				final String name;
@@ -314,10 +307,12 @@ class SolrEnumerator<E> implements Enumerator<E> {
 
 	/** Array row converter. */
 	static class ArrayRowConverter extends RowConverter<Object[]> {
+
 		private final SolrFieldType[] fieldTypes;
 		private final int[] fields;
 
 		ArrayRowConverter(List<SolrFieldType> fieldTypes, int[] fields) {
+
 			this.fieldTypes = fieldTypes.toArray(new SolrFieldType[fieldTypes
 					.size()]);
 			this.fields = fields;

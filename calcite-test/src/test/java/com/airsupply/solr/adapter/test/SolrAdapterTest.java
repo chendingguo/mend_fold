@@ -1,4 +1,3 @@
-
 package com.airsupply.solr.adapter.test;
 
 import org.apache.calcite.linq4j.function.Function1;
@@ -103,7 +102,8 @@ public class SolrAdapterTest {
 	}
 
 	private String jsonPath(String model) {
-		final URL url = SolrAdapterTest.class.getResource("/" + model + ".json");
+		final URL url = SolrAdapterTest.class
+				.getResource("/" + model + ".json");
 		String s = url.toString();
 		if (s.startsWith("file:")) {
 			s = s.substring("file:".length());
@@ -145,24 +145,21 @@ public class SolrAdapterTest {
 		}
 	}
 
-	
-
 	/**
 	 * Reads from a table.
 	 */
 	@Test
 	public void testSelect() throws SQLException {
-//        String sql_employee="select * from EMPLOYEE where id>1 ";
-//        System.out.println(sql_employee);
-//		checkSql("solr_model", sql_employee);
-//		
-//		String sql_dept="select * from DEPTS ";
-//        System.out.println(sql_dept);
-//		checkSql("solr_model", sql_dept);
-		
-		String sql_cartesian="select * from DEPTS ,EMPLOYEE";
-		 System.out.println(sql_cartesian);
-			checkSql("solr_model", sql_cartesian);
+		String sql_employee = "select * from EMPLOYEE where id>1 ";
+		System.out.println("\n" + sql_employee);
+		checkSql("solr_model", sql_employee);
+
+		String sql_dept = "select * from DEPTS ";
+		System.out.println("\n" + sql_dept);
+		checkSql("solr_model", sql_dept);
+
+		String sql_cartesian = "select * from EMPLOYEE E LEFT JOIN DEPTS D on E.DEPTNO=D.DEPTNO";
+		System.out.println("\n" + sql_cartesian);
+		checkSql("solr_model", sql_cartesian);
 	}
 }
-

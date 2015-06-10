@@ -40,9 +40,6 @@ import au.com.bytecode.opencsv.CSVReader;
  */
 class SolrEnumerator<E> implements Enumerator<E> {
 	private static String JSON_SUFFIX = ".json";
-	private static String ip;
-	private static int port;
-	private static String coreName;
 	SolrDocumentList solrDocumentList;
 	private int index = 0;
 
@@ -102,8 +99,12 @@ class SolrEnumerator<E> implements Enumerator<E> {
 	}
 
 	/**
-	 * Deduces the names and types of a table's columns by reading the first
-	 * line of a config csv file.
+	 * get the date type of table
+	 * 
+	 * @param typeFactory
+	 * @param file
+	 * @param fieldTypes
+	 * @return
 	 */
 	static RelDataType deduceRowType(JavaTypeFactory typeFactory, File file,
 			List<SolrFieldType> fieldTypes) {
@@ -162,6 +163,13 @@ class SolrEnumerator<E> implements Enumerator<E> {
 		return typeFactory.createStructType(Pair.zip(names, types));
 	}
 
+	/**
+	 * open the config csv file
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
 	private static CSVReader openCsv(File file) throws IOException {
 		final Reader fileReader;
 		if (file.getName().endsWith(".gz")) {
@@ -175,10 +183,12 @@ class SolrEnumerator<E> implements Enumerator<E> {
 		return new CSVReader(fileReader);
 	}
 
+	@Override
 	public E current() {
 		return current;
 	}
 
+	@Override
 	public boolean moveNext() {
 		if (index >= solrDocumentList.size()) {
 			return false;
@@ -207,10 +217,12 @@ class SolrEnumerator<E> implements Enumerator<E> {
 		return list;
 	}
 
+	@Override
 	public void reset() {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public void close() {
 
 	}

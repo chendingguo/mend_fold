@@ -2,6 +2,7 @@ package com.airsupply.solr.adapter.test;
 
 import org.apache.calcite.linq4j.function.Function1;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class SolrAdapterTest {
 	}
 
 	public static String toLinux(String s) {
-		return s.replaceAll("\r\n", "\n");
+		return s.replaceAll("/r/n", "/n");
 	}
 
 	private void checkSql(String model, String sql) throws SQLException {
@@ -144,12 +145,19 @@ public class SolrAdapterTest {
 			}
 		}
 	}
+    @Before
+	public void setConfigPath() {
+		String configPath = "E:/mend_fold/calcite-test/src/test/resources/solr";
+		System.out.println("config path:"+configPath);
+		System.setProperty("calcite.config.path", configPath);
+	}
 
 	/**
 	 * get the sql excute result
 	 */
 	@Test
 	public void testSelect() throws SQLException {
+
 		String sql_employee = "select * from EMPLOYEE where id>1 ";
 		System.out.println("\n" + sql_employee);
 		checkSql("solr_model", sql_employee);

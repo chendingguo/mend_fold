@@ -28,7 +28,9 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.airsupply.adapter.solr.metadata.MetaDataManager;
+import com.airsupply.adapter.solr.metadata.vo.ColumnVO;
+import com.airsupply.adapter.solr.metadata.vo.TableDesc;
 
 /**
  * Enumerator that read the solr data.
@@ -72,9 +74,11 @@ class SolrEnumerator<E> implements Enumerator<E> {
 			RowConverter<E> rowConverter) {
 		this.rowConverter = rowConverter;
 		String configFileName = file.getName().split("[.]")[0] + JSON_SUFFIX;
-		String configFilePath = file.getParentFile().getAbsolutePath() + "/"
-				+ configFileName;
-		String connUrl = SolrAdapterUtil.getConnectUrl(configFilePath);
+		
+		String tableName = file.getName().split("[.]")[0];
+		TableDesc tableDesc = MetaDataManager.getTableDesc(tableName);
+		Map<String, Object> connInfoMap = tableDesc.getConnInfo();
+		String connUrl = SolrAdapterUtil.getConnectUrl(connInfoMap);
 		SolrClient solrClient = SolrClientFactory.getSolrClient(connUrl);
 		QueryResponse resp = null;
 		try {
@@ -99,8 +103,7 @@ class SolrEnumerator<E> implements Enumerator<E> {
 	}
 
 	/**
-	 * TODO: 
-	 * get the date type of table
+	 * TODO: get the date type of table
 	 * 
 	 * @param typeFactory
 	 * @param file
@@ -111,77 +114,41 @@ class SolrEnumerator<E> implements Enumerator<E> {
 			List<SolrFieldType> fieldTypes) {
 		final List<RelDataType> types = new ArrayList<RelDataType>();
 		final List<String> names = new ArrayList<String>();
-		CSVReader reader = null;
-		try {
-			reader = openCsv(file);
-			final String[] strings = reader.readNext();
-			for (String string : strings) {
-				final String name;
-				final SolrFieldType fieldType;
-				final int colon = string.indexOf(':');
-				if (colon >= 0) {
-					name = string.substring(0, colon);
-					String typeString = string.substring(colon + 1);
-					fieldType = SolrFieldType.of(typeString);
-					if (fieldType == null) {
-						System.out.println("WARNING: Found unknown type: "
-								+ typeString + " in file: "
-								+ file.getAbsolutePath() + " for column: "
-								+ name
-								+ ". Will assume the type of column is string");
-					}
-				} else {
-					name = string;
-					fieldType = null;
-				}
-				final RelDataType type;
-				if (fieldType == null) {
-					type = typeFactory.createJavaType(String.class);
-				} else {
-					type = fieldType.toType(typeFactory);
-				}
-				names.add(name);
-				types.add(type);
-				if (fieldTypes != null) {
-					fieldTypes.add(fieldType);
-				}
+
+		String tableName = file.getName().split("[.]")[0];
+		TableDesc tableDesc = MetaDataManager.getTableDesc(tableName);
+		List<ColumnVO> columns = tableDesc.getTableColumns();
+		for (ColumnVO column : columns) {
+			final RelDataType relDataType;
+			final String name = column.getName();
+			String type = column.getType();
+			final SolrFieldType fieldType;
+
+			fieldType = SolrFieldType.of(type);
+			if (fieldType == null) {
+				System.out.println("WARNING: Found unknown type: " + type
+						+ " in file: " + file.getAbsolutePath()
+						+ " for column: " + name
+						+ ". Will assume the type of column is string");
 			}
-		} catch (IOException e) {
-			// ignore
-		} finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					// ignore
-				}
+			if (fieldType == null) {
+				relDataType = typeFactory.createJavaType(String.class);
+			} else {
+				relDataType = fieldType.toType((JavaTypeFactory) typeFactory);
 			}
+			names.add(name);
+			types.add(relDataType);
+			if (fieldTypes != null) {
+				fieldTypes.add(fieldType);
+			}
+
 		}
+
 		if (names.isEmpty()) {
 			names.add("line");
 			types.add(typeFactory.createJavaType(String.class));
 		}
 		return typeFactory.createStructType(Pair.zip(names, types));
-	}
-
-	/**
-	 * open the config csv file
-	 * 
-	 * @param file
-	 * @return
-	 * @throws IOException
-	 */
-	private static CSVReader openCsv(File file) throws IOException {
-		final Reader fileReader;
-		if (file.getName().endsWith(".gz")) {
-			@SuppressWarnings("resource")
-			final GZIPInputStream inputStream = new GZIPInputStream(
-					new FileInputStream(file));
-			fileReader = new InputStreamReader(inputStream);
-		} else {
-			fileReader = new FileReader(file);
-		}
-		return new CSVReader(fileReader);
 	}
 
 	@Override

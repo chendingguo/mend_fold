@@ -53,12 +53,8 @@ public class SolrSchema extends AbstractSchema {
 	@Override
 	protected Map<String, Table> getTableMap() {
 		
-		File[] files = directoryFile.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				final String nameSansGz = trim(name, ".gz");
-				return nameSansGz.endsWith(".csv");
-			}
-		});
+		File[] files = directoryFile.listFiles();
+		
 		if (files == null) {
 			System.out.println("directory " + directoryFile + " not found");
 			files = new File[0];
@@ -67,8 +63,8 @@ public class SolrSchema extends AbstractSchema {
 		final ImmutableMap.Builder<String, Table> builder = ImmutableMap
 				.builder();
 		for (File file : files) {
-			String tableName = trim(file.getName(), ".gz");
-			tableName = trim(tableName, ".csv");
+			
+			String tableName = trim(file.getName(), ".json");
 			final Table table = createTable(file);
 			builder.put(tableName, table);
 		}

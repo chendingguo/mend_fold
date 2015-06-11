@@ -1,5 +1,26 @@
 {
-ip:"192.168.202.129",
-port:8080,
-coreName:"core2"
+  connInfo: {
+    ip: "192.168.202.129",
+    port: "8080",
+    coreName: "core2"
+  },
+  tableColumns: [
+    {
+      name: "ID",
+      type: "int"
+    },
+    {
+      name: "NAME",
+      type: "string"
+    },
+    {
+      name: "DEPTNO",
+      type: "int"
+    },
+    {
+      name: "_version_",
+      type: "string"
+    }
+    
+  ]
 }

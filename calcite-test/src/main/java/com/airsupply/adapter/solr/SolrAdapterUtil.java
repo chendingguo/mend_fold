@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
 import java.util.Properties;
 
 import net.sf.json.JSONObject;
@@ -17,27 +18,28 @@ import net.sf.json.JSONObject;
  */
 public class SolrAdapterUtil {
 	/**
-	 * get connection url of solr 
+	 * get connection url of solr
+	 * 
 	 * @param configPath
 	 * @return
 	 */
-	public static  String getConnectUrl(String configFilePath){
-		String jsonStr=ReadFile(configFilePath);
-		JSONObject jsonObj=JSONObject.fromObject(jsonStr);
-		String ip=jsonObj.getString("ip");
-		int port=jsonObj.getInt("port");
-		String coreName=jsonObj.getString("coreName");
+	public static String getConnectUrl(Map<String, Object> connInfoMap) {
+
+		String ip = (String) connInfoMap.get("ip");
+		String port = (String) connInfoMap.get("port");
+		String coreName = (String) connInfoMap.get("coreName");
 		String connUrl = "http://" + ip + ":" + port + "/solr/" + coreName;
 		return connUrl;
-		
+
 	}
 
 	/**
-	 * read file 
+	 * read file
+	 * 
 	 * @param Path
 	 * @return
 	 */
-	public static  String ReadFile(String Path) {
+	public static String ReadFile(String Path) {
 		BufferedReader reader = null;
 		String laststr = "";
 		try {

@@ -21,7 +21,7 @@ public class SolrSchema extends AbstractSchema {
 	 * Creates a Solr schema.
 	 *
 	 * @param directoryFile
-	 *            Directory that holds {@code .csv} files
+	 *            Directory that holds table describe files
 	 * @param flavor
 	 *            Whether to instantiate flavor tables that undergo query
 	 *            optimization

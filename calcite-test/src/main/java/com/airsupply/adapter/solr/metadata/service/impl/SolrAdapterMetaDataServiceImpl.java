@@ -37,18 +37,4 @@ public class SolrAdapterMetaDataServiceImpl implements AdapterMetaDataService {
 
 	}
 
-	public static void main(String[] args) {
-		System.setProperty("calcite.config.path", "d:/");
-		SolrAdapterMetaDataServiceImpl service = SolrAdapterMetaDataServiceImpl.INSTANCE;
-		String jsonStr = service.getConfigString("DEPTS");
-		JSONObject js = JSONObject.fromObject(jsonStr);
-		Map<String, Class<?>> classMap = new HashMap<String, Class<?>>();
-		classMap.put("tableColumns", ColumnVO.class);
-		TableDesc tableDesc = (TableDesc) JSONObject.toBean(js,
-				TableDesc.class, classMap);
-		System.out.println(tableDesc.getConnInfo());
-		System.out.println(tableDesc.getTableColumns());
-
-	}
-
 }

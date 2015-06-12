@@ -145,10 +145,11 @@ public class SolrAdapterTest {
 			}
 		}
 	}
-    @Before
+
+	@Before
 	public void setConfigPath() {
 		String configPath = "E:/mend_fold/calcite-test/src/test/resources/solr";
-		System.out.println("config path:"+configPath);
+		System.out.println("config path:" + configPath);
 		System.setProperty("calcite.config.path", configPath);
 	}
 
@@ -158,28 +159,33 @@ public class SolrAdapterTest {
 	@Test
 	public void testSelect() throws SQLException {
 
-//		String sql_employee = "select * from EMPLOYEE where id>1 ";
-//		System.out.println("\n" + sql_employee);
-//		checkSql("solr_model", sql_employee);
-//
-//		String sql_dept = "select * from DEPTS ";
-//		System.out.println("\n" + sql_dept);
-//		checkSql("solr_model", sql_dept);
-//
-//		String sql_cartesian = "select * from EMPLOYEE E LEFT JOIN DEPTS D on E.DEPTNO=D.DEPTNO";
-//		System.out.println("\n" + sql_cartesian);
-//		checkSql("solr_model", sql_cartesian);
-		
-        long start=System.currentTimeMillis();
-//		String sql_salse_fact_1998 = "select * from SALES_FACT_1998";
-//		System.out.println("\n" + sql_salse_fact_1998);
-//		checkSql("solr_model", sql_salse_fact_1998);
-//		
-		String sql_salse_fact_1998_condition = "select * from sales_fact_1998 where product_id=1408";
+		// String sql_employee = "select * from EMPLOYEE where id>1 ";
+		// System.out.println("\n" + sql_employee);
+		// checkSql("solr_model", sql_employee);
+		//
+		// String sql_dept = "select * from DEPTS ";
+		// System.out.println("\n" + sql_dept);
+		// checkSql("solr_model", sql_dept);
+		//
+		// String sql_cartesian =
+		// "select * from EMPLOYEE E LEFT JOIN DEPTS D on E.DEPTNO=D.DEPTNO";
+		// System.out.println("\n" + sql_cartesian);
+		// checkSql("solr_model", sql_cartesian);
+
+		long start = System.currentTimeMillis();
+		// String sql_salse_fact_1998 = "select * from SALES_FACT_1998";
+		// System.out.println("\n" + sql_salse_fact_1998);
+		// checkSql("solr_model", sql_salse_fact_1998);
+		//
+		String sql_salse_fact_1998_condition = "select count(product_id) from sales_fact_1998  group by product_id having product_id=1403";
 		System.out.println("\n" + sql_salse_fact_1998_condition);
 		checkSql("solr_model", sql_salse_fact_1998_condition);
-		long end=System.currentTimeMillis();
-		long usedTime=end-start;
-		System.out.println("--|Search used "+usedTime+ " ms");
+
+		String sql_salse_fact_1998_sum = "select count(product_id) from sales_fact_1998 ";
+		System.out.println("\n" + sql_salse_fact_1998_sum);
+		checkSql("solr_model", sql_salse_fact_1998_sum);
+		long end = System.currentTimeMillis();
+		long usedTime = end - start;
+		System.out.println("--|Search used " + usedTime + " ms");
 	}
 }

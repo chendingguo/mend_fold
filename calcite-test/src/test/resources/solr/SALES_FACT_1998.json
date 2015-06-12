@@ -45,6 +45,6 @@
   ],
   
    queryFilter:{
-     limit:"2000"
+     limit:"200000"
   }
 }

@@ -1,4 +1,4 @@
-{
+{ 
   connInfo: {
     ip: "192.168.202.129",
     port: "8080",
@@ -22,5 +22,9 @@
       type: "string"
     }
     
-  ]
+  ],
+  
+  queryFilter:{
+     limit:"1000"
+  }
 }

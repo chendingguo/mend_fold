@@ -29,5 +29,9 @@
       name: "_version_",
       type: "string"
     }
-  ]
+  ],
+   
+   queryFilter:{
+     limit:"1000"
+  }
 }

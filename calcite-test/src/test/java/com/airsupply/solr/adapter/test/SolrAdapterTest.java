@@ -158,16 +158,28 @@ public class SolrAdapterTest {
 	@Test
 	public void testSelect() throws SQLException {
 
-		String sql_employee = "select * from EMPLOYEE where id>1 ";
-		System.out.println("\n" + sql_employee);
-		checkSql("solr_model", sql_employee);
-
-		String sql_dept = "select * from DEPTS ";
-		System.out.println("\n" + sql_dept);
-		checkSql("solr_model", sql_dept);
-
-		String sql_cartesian = "select * from EMPLOYEE E LEFT JOIN DEPTS D on E.DEPTNO=D.DEPTNO";
-		System.out.println("\n" + sql_cartesian);
-		checkSql("solr_model", sql_cartesian);
+//		String sql_employee = "select * from EMPLOYEE where id>1 ";
+//		System.out.println("\n" + sql_employee);
+//		checkSql("solr_model", sql_employee);
+//
+//		String sql_dept = "select * from DEPTS ";
+//		System.out.println("\n" + sql_dept);
+//		checkSql("solr_model", sql_dept);
+//
+//		String sql_cartesian = "select * from EMPLOYEE E LEFT JOIN DEPTS D on E.DEPTNO=D.DEPTNO";
+//		System.out.println("\n" + sql_cartesian);
+//		checkSql("solr_model", sql_cartesian);
+		
+        long start=System.currentTimeMillis();
+//		String sql_salse_fact_1998 = "select * from SALES_FACT_1998";
+//		System.out.println("\n" + sql_salse_fact_1998);
+//		checkSql("solr_model", sql_salse_fact_1998);
+//		
+		String sql_salse_fact_1998_condition = "select * from sales_fact_1998 where product_id=1408";
+		System.out.println("\n" + sql_salse_fact_1998_condition);
+		checkSql("solr_model", sql_salse_fact_1998_condition);
+		long end=System.currentTimeMillis();
+		long usedTime=end-start;
+		System.out.println("--|Search used "+usedTime+ " ms");
 	}
 }

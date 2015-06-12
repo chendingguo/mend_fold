@@ -11,6 +11,7 @@ import java.util.Map;
  */
 public class TableDesc {
 	public Map<String,Object> connInfo=new HashMap<String,Object>();
+	public Map<String,String> queryFilter=new HashMap<String,String>();
 	public List<ColumnVO>tableColumns=new ArrayList<ColumnVO>();
 	public Map<String, Object> getConnInfo() {
 		return connInfo;
@@ -24,6 +25,13 @@ public class TableDesc {
 	public void setTableColumns(List<ColumnVO> tableColumns) {
 		this.tableColumns = tableColumns;
 	}
+	public Map<String, String> getQueryFilter() {
+		return queryFilter;
+	}
+	public void setQueryFilter(Map<String, String> queryFilter) {
+		this.queryFilter = queryFilter;
+	}
+	
 	
 	
 

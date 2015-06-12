@@ -2,15 +2,10 @@ package com.dp.prototype;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOError;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-
-import javax.sql.rowset.serial.SerialJavaObject;
-
-import org.omg.PortableInterceptor.ObjectIdHelper;
 
 public class Prototype implements Cloneable,Serializable {
 

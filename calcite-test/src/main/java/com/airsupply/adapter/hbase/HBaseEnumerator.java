@@ -37,7 +37,6 @@ import com.airsupply.adapter.hbase.metadata.vo.TableDesc;
  *            rowtype
  */
 class HBaseEnumerator<E> implements Enumerator<E> {
-	private static final String ROW_KEY = "ROW_KEY";
 	ResultScanner resultScanner;
 
 	private final RowConverter<E> rowConverter;
@@ -47,6 +46,7 @@ class HBaseEnumerator<E> implements Enumerator<E> {
 	private static final FastDateFormat TIME_FORMAT_TIME;
 	private static final FastDateFormat TIME_FORMAT_TIMESTAMP;
 	private static String tableName;
+	//row key definition name in json file
 	private static String rowKeyName;
 
 	static {

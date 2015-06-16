@@ -13,7 +13,6 @@ import com.airsupply.adapter.hbase.metadata.service.AdapterMetaDataService;
 import com.airsupply.adapter.hbase.metadata.vo.Column;
 import com.airsupply.adapter.hbase.metadata.vo.Family;
 import com.airsupply.adapter.hbase.metadata.vo.TableDesc;
-import com.airsupply.adapter.solr.SolrAdapterUtil;
 
 public class HbaseAdapterMetaDataServiceImpl implements AdapterMetaDataService {
 	public static HbaseAdapterMetaDataServiceImpl INSTANCE = new HbaseAdapterMetaDataServiceImpl();

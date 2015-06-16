@@ -1,13 +1,12 @@
 package com.airsupply.adapter.hbase;
 
+import java.io.File;
+import java.util.Map;
+
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 
 import com.google.common.collect.ImmutableMap;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Map;
 
 /**
  * Schema mapped onto a directory of Hbase files.

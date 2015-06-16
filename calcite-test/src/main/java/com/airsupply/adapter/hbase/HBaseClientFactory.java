@@ -28,10 +28,12 @@ public class HBaseClientFactory {
 		String tableName = connInfoMap.get(ConnInfo.tableName.toString());
 		HTable htable = htablePool.get(tableName);
 		String ip = connInfoMap.get(ConnInfo.ip.toString());
+		String port = connInfoMap.get(ConnInfo.port.toString());
 		if (htable == null) {
 
 			Configuration conf = HBaseConfiguration.create();
 			conf.set("hbase.zookeeper.quorum", ip);
+			conf.set("hbase.zookeeper.property.clientPort", port);
 			try {
 				htable = new HTable(conf, Bytes.toBytes(tableName));
 				htablePool.put(tableName, htable);

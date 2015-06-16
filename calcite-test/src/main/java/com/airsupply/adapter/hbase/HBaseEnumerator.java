@@ -1,4 +1,4 @@
-package com.airsupply.adapter.solr;
+package com.airsupply.adapter.hbase;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,34 +10,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.TreeMap;
 
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.util.Pair;
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.util.Bytes;
 
-import com.airsupply.adapter.solr.metadata.MetaDataManager;
-import com.airsupply.adapter.solr.metadata.vo.ColumnVO;
-import com.airsupply.adapter.solr.metadata.vo.TableDesc;
+import com.airsupply.adapter.hbase.metadata.MetaDataManager;
+import com.airsupply.adapter.hbase.metadata.vo.Column;
+import com.airsupply.adapter.hbase.metadata.vo.TableDesc;
 
 /**
- * Enumerator that read the solr data.
+ * Enumerator that read the hbase data.
  * 
  * @author arisupply
  *
  * @param <E>
  *            rowtype
  */
-class SolrEnumerator<E> implements Enumerator<E> {
-	SolrDocumentList solrDocumentList;
-	private int index = 0;
+class HBaseEnumerator<E> implements Enumerator<E> {
+	private static final String ROW_KEY = "ROW_KEY";
+	ResultScanner resultScanner;
 
 	private final RowConverter<E> rowConverter;
 	private E current;
@@ -46,6 +47,7 @@ class SolrEnumerator<E> implements Enumerator<E> {
 	private static final FastDateFormat TIME_FORMAT_TIME;
 	private static final FastDateFormat TIME_FORMAT_TIMESTAMP;
 	private static String tableName;
+	private static String rowKeyName;
 
 	static {
 		TimeZone gmt = TimeZone.getTimeZone("GMT");
@@ -55,42 +57,44 @@ class SolrEnumerator<E> implements Enumerator<E> {
 				"yyyy-MM-dd hh:mm:ss", gmt);
 	}
 
-	public SolrEnumerator(File file, List<SolrFieldType> fieldTypes) {
+	public HBaseEnumerator(File file, List<HBaseFieldType> fieldTypes) {
 		this(file, fieldTypes, identityList(fieldTypes.size()));
 	}
 
 	@SuppressWarnings("unchecked")
-	public SolrEnumerator(File file, List<SolrFieldType> fieldTypes,
+	public HBaseEnumerator(File file, List<HBaseFieldType> fieldTypes,
 			int[] fields) {
 		this(file, null, (RowConverter<E>) converter(fieldTypes, fields));
 	}
 
-	public SolrEnumerator(File file, String[] filterValues,
+	public HBaseEnumerator(File file, String[] filterValues,
 			RowConverter<E> rowConverter) {
 		this.rowConverter = rowConverter;
 		tableName = file.getName().split("[.]")[0];
 		TableDesc tableDesc = MetaDataManager.getTableDesc(tableName);
-		Map<String, Object> connInfoMap = tableDesc.getConnInfo();
-		Map<String,String> queryFilter=tableDesc.getQueryFilter();
-		int limit=Integer.parseInt(queryFilter.get("limit"));
-		String connUrl = SolrAdapterUtil.getConnectUrl(connInfoMap);
-		SolrClient solrClient = SolrClientFactory.getSolrClient(connUrl);
-		QueryResponse resp = null;
+		rowKeyName = tableDesc.getRowKeyName();
+		Map<String, String> connInfoMap = tableDesc.getConnInfo();
+		Map<String, String> queryFilter = tableDesc.getQueryFilter();
+		String startRow = queryFilter.get("startRow");
+		String stopRow = queryFilter.get("stopRow");
+
+		HTable htable = HBaseClientFactory.getHTable(connInfoMap);
+		Scan scan = new Scan();
+		if (startRow != null && !startRow.isEmpty()) {
+			scan.setStartRow(Bytes.toBytes(startRow));
+		}
+		if (stopRow != null && !stopRow.isEmpty()) {
+			scan.setStopRow(Bytes.toBytes(stopRow));
+		}
 		try {
-			SolrQuery solrQuery=new SolrQuery("*:*");
-			solrQuery.setStart(0);
-			solrQuery.setRows(limit);
-			resp = solrClient.query(solrQuery);
-			this.solrDocumentList = resp.getResults();
-		} catch (SolrServerException e) {
-			e.printStackTrace();
+			resultScanner = htable.getScanner(scan);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	private static RowConverter<?> converter(List<SolrFieldType> fieldTypes,
+	private static RowConverter<?> converter(List<HBaseFieldType> fieldTypes,
 			int[] fields) {
 		if (fields.length == 1) {
 			final int field = fields[0];
@@ -101,29 +105,28 @@ class SolrEnumerator<E> implements Enumerator<E> {
 	}
 
 	/**
-	 * TODO: get the date type of table
-	 * 
+	 *
 	 * @param typeFactory
 	 * @param file
 	 * @param fieldTypes
 	 * @return
 	 */
 	static RelDataType deduceRowType(JavaTypeFactory typeFactory, File file,
-			List<SolrFieldType> fieldTypes) {
+			List<HBaseFieldType> fieldTypes) {
 		final List<RelDataType> types = new ArrayList<RelDataType>();
 		final List<String> names = new ArrayList<String>();
 
 		String tableName = file.getName().split("[.]")[0];
-		TableDesc tableDesc = MetaDataManager.getTableDesc(tableName);
-		List<ColumnVO> columns = tableDesc.getTableColumns();
-		for (ColumnVO column : columns) {
+		List<Column> columns = MetaDataManager.getColumns(tableName);
+
+		for (Column column : columns) {
 			final RelDataType relDataType;
-			//must change the name to upper case
+			// must change the name to upper case
 			final String name = column.getName().toUpperCase();
 			String type = column.getType();
-			final SolrFieldType fieldType;
+			final HBaseFieldType fieldType;
 
-			fieldType = SolrFieldType.of(type);
+			fieldType = HBaseFieldType.of(type);
 			if (fieldType == null) {
 				System.out.println("WARNING: Found unknown type: " + type
 						+ " in file: " + file.getAbsolutePath()
@@ -157,24 +160,48 @@ class SolrEnumerator<E> implements Enumerator<E> {
 
 	@Override
 	public boolean moveNext() {
-		if (index >= solrDocumentList.size()) {
-			return false;
+		try {
+			Result result = resultScanner.next();
+			if (result == null) {
+				return false;
+			}
+			List<Cell> ceList = result.listCells();
+			Map<String, Object> map = new TreeMap<String, Object>();
+			if (ceList != null && ceList.size() > 0) {
+				for (Cell cell : ceList) {
+
+					String rowKey = Bytes.toString(cell.getRowArray(),
+							cell.getRowOffset(), cell.getRowLength());
+
+					String familyName = Bytes.toString(cell.getFamilyArray(),
+							cell.getFamilyOffset(), cell.getFamilyLength());
+
+					String qualifier = Bytes.toString(cell.getQualifierArray(),
+							cell.getQualifierOffset(),
+							cell.getQualifierLength());
+
+					String value = Bytes.toString(cell.getValueArray(),
+							cell.getValueOffset(), cell.getValueLength());
+					String distinctName = familyName + "_" + qualifier;
+					map.put(distinctName.toUpperCase(), value);
+					map.put(rowKeyName, rowKey);
+
+				}
+
+			}
+			List<Column> columns = MetaDataManager.getColumns(tableName);
+			String[] strings = new String[columns.size()];
+			int i = 0;
+			for (Column column : columns) {
+				String val = String.valueOf(map.get(column.getName()));
+				strings[i] = val;
+				i++;
+			}
+
+			current = rowConverter.convertRow(strings);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		SolrDocument solrDocument = solrDocumentList.get(index);
-		
-		//readjust the field value array to match the meta data column order
-		TableDesc tableDesc=MetaDataManager.getTableDesc(tableName);
-		List<ColumnVO> columns=tableDesc.getTableColumns();
-		String[] strings=new String[columns.size()];
-		int i=0;
-		for(ColumnVO column:columns){
-			String value=String.valueOf(solrDocument.getFieldValue(column.getName().toLowerCase()));
-			strings[i]=value;
-			i++;
-		}
-		current = rowConverter.convertRow(strings);
-		// move to next index of the solrDocumentList
-		index++;
 		return true;
 
 	}
@@ -197,7 +224,7 @@ class SolrEnumerator<E> implements Enumerator<E> {
 
 	@Override
 	public void close() {
-
+		resultScanner = null;
 	}
 
 	/** Returns an array of integers {0, ..., n - 1}. */
@@ -213,7 +240,7 @@ class SolrEnumerator<E> implements Enumerator<E> {
 	abstract static class RowConverter<E> {
 		abstract E convertRow(String[] rows);
 
-		protected Object convert(SolrFieldType fieldType, String string) {
+		protected Object convert(HBaseFieldType fieldType, String string) {
 			if (fieldType == null) {
 				return string;
 			}
@@ -293,12 +320,12 @@ class SolrEnumerator<E> implements Enumerator<E> {
 	/** Array row converter. */
 	static class ArrayRowConverter extends RowConverter<Object[]> {
 
-		private final SolrFieldType[] fieldTypes;
+		private final HBaseFieldType[] fieldTypes;
 		private final int[] fields;
 
-		ArrayRowConverter(List<SolrFieldType> fieldTypes, int[] fields) {
-            
-			this.fieldTypes = fieldTypes.toArray(new SolrFieldType[fieldTypes
+		ArrayRowConverter(List<HBaseFieldType> fieldTypes, int[] fields) {
+
+			this.fieldTypes = fieldTypes.toArray(new HBaseFieldType[fieldTypes
 					.size()]);
 			this.fields = fields;
 		}
@@ -315,10 +342,11 @@ class SolrEnumerator<E> implements Enumerator<E> {
 
 	/** Single column row converter. */
 	private static class SingleColumnRowConverter extends RowConverter<Object> {
-		private final SolrFieldType fieldType;
+		private final HBaseFieldType fieldType;
 		private final int fieldIndex;
 
-		private SingleColumnRowConverter(SolrFieldType fieldType, int fieldIndex) {
+		private SingleColumnRowConverter(HBaseFieldType fieldType,
+				int fieldIndex) {
 			this.fieldType = fieldType;
 			this.fieldIndex = fieldIndex;
 		}

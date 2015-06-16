@@ -1,4 +1,4 @@
-package com.airsupply.solr.adapter.test;
+package com.airsupply.hbase.adapter.test;
 
 import java.io.PrintStream;
 import java.net.URL;
@@ -19,9 +19,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Unit test of the Calcite adapter for SOLR.
+ * Unit test of the Calcite adapter for HBase.
  */
-public class SolrAdapterTest {
+public class HbaseAdapterTest {
 	private void close(Connection connection, Statement statement) {
 		if (statement != null) {
 			try {
@@ -75,7 +75,7 @@ public class SolrAdapterTest {
 			public Void apply(ResultSet resultSet) {
 				try {
 					final List<String> lines = new ArrayList<String>();
-					SolrAdapterTest.collect(lines, resultSet);
+					HbaseAdapterTest.collect(lines, resultSet);
 					Assert.assertEquals(Arrays.asList(expected), lines);
 				} catch (SQLException e) {
 					throw new RuntimeException(e);
@@ -87,7 +87,7 @@ public class SolrAdapterTest {
 
 	private void checkSql(String sql, String model,
 			Function1<ResultSet, Void> fn) throws SQLException {
-		//try to connect 
+		// try to connect
 		Connection connection = null;
 		Statement statement = null;
 		try {
@@ -103,8 +103,8 @@ public class SolrAdapterTest {
 	}
 
 	private String jsonPath(String model) {
-		final URL url = SolrAdapterTest.class
-				.getResource("/" + model + ".json");
+		final URL url = HbaseAdapterTest.class.getResource("/" + model
+				+ ".json");
 		String s = url.toString();
 		if (s.startsWith("file:")) {
 			s = s.substring("file:".length());
@@ -148,9 +148,10 @@ public class SolrAdapterTest {
 
 	@Before
 	public void setConfigPath() {
-		String configPath = "E:/mend_fold/calcite-test/src/test/resources/solr";
+		String configPath = "E:/mend_fold/calcite-test/src/test/resources/hbase";
 		System.out.println("config path:" + configPath);
-		System.setProperty("calcite.config.path", configPath);
+		System.setProperty("calcite.config.hbase.path", configPath);
+		System.setProperty("hadoop.home.dir", "D:/develope/hadoop-2.4.0");
 	}
 
 	/**
@@ -159,30 +160,12 @@ public class SolrAdapterTest {
 	@Test
 	public void testSelect() throws SQLException {
 
-		String sql_employee = "select * from EMPLOYEE where ID>3";
-		System.out.println("\n" + sql_employee);
-		checkSql("solr_model", sql_employee);
-
-		String sql_dept = "select * from DEPTS ";
-		System.out.println("\n" + sql_dept);
-		checkSql("solr_model", sql_dept);
-
-		String sql_left_join = "select * from EMPLOYEE E LEFT JOIN DEPTS D on E.DEPTNO=D.DEPTNO";
-		System.out.println("\n" + sql_left_join);
-		checkSql("solr_model", sql_left_join);
-		
-		String sql_group = "select DEPTNO,count(*) from EMPLOYEE group by DEPTNO ";
-		System.out.println("\n" + sql_group);
-		System.out.println("\n" + "[DEPTNO, COUNT]");
-		checkSql("solr_model", sql_group);
-
-
 		long start = System.currentTimeMillis();
-		String sql_salse_fact_1998_sum = "select count(PRODUCT_ID) from SALES_FACT_1998";
-		System.out.println("\n" + sql_salse_fact_1998_sum);
-		checkSql("solr_model", sql_salse_fact_1998_sum);
+		String sql_blog_test = "select *  from BLOG";
+		System.out.println("\n" + sql_blog_test);
+		checkSql("hbase_model", sql_blog_test);
 		long end = System.currentTimeMillis();
 		long usedTime = end - start;
-		//System.out.println("--|Search used " + usedTime + " ms");
+		System.out.println("--|Search used " + usedTime + " ms");
 	}
 }

@@ -1,4 +1,4 @@
-package com.airsupply.hbase.test;
+package com.airsupply.hbase.adapter.test;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -38,6 +38,7 @@ public class Hbase {
 			throws Exception {
 		Configuration conf = HBaseConfiguration.create();
 		conf.set("hbase.zookeeper.quorum", "192.168.202.129");
+		@SuppressWarnings("resource")
 		HBaseAdmin admin = new HBaseAdmin(conf);
 		HTableDescriptor desc = new HTableDescriptor(
 				TableName.valueOf(tableName));
@@ -297,6 +298,7 @@ public class Hbase {
 			@SuppressWarnings("resource")
 			HTable table = new HTable(conf, Bytes.toBytes(tableName));
 			rs = table.getScanner(scan);
+			
 			for (Result r : rs) {
 				List<Cell> ceList = r.listCells();
 				Map<String, Object> map = new TreeMap<String, Object>();
@@ -325,10 +327,20 @@ public class Hbase {
 									cell.getFamilyOffset(),
 									cell.getFamilyLength());
 							System.out.println(familyName);
+
+							
+							String qualifier=Bytes.toString(cell.getQualifierArray(),
+									cell.getQualifierOffset(),
+									cell.getQualifierLength());
+							System.out.println(qualifier);
+							
+							
 							System.out.println(Bytes
 									.toString(cell.getValueArray(),
 											cell.getValueOffset(),
 											cell.getValueLength()));
+							
+						
 
 					//	}
 
@@ -365,6 +377,7 @@ public class Hbase {
 	}
 
 	public static void main(String[] args) throws Exception {
+		System.setProperty("hadoop.home.dir", "D:/develope/hadoop-2.4.0");
 		setConfig();
 		String tableName = "blog-test";
 		// createTable(tableName);

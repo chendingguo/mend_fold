@@ -164,8 +164,13 @@ public class HbaseAdapterTest {
 		String sql_blog_test = "select *  from BLOG";
 		System.out.println("\n" + sql_blog_test);
 		checkSql("hbase_model", sql_blog_test);
+
 		long end = System.currentTimeMillis();
 		long usedTime = end - start;
 		System.out.println("--|Search used " + usedTime + " ms");
+
+		String sql_metadata_test = "select ROW_KEY from KYLIN_METADATA";
+		System.out.println("\n" + sql_metadata_test);
+		checkSql("hbase_model", sql_metadata_test);
 	}
 }

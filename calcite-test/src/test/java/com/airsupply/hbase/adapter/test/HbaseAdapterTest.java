@@ -44,6 +44,7 @@ public class HbaseAdapterTest {
 	}
 
 	private void checkSql(String model, String sql) throws SQLException {
+		
 		checkSql(sql, model, output());
 	}
 
@@ -96,6 +97,7 @@ public class HbaseAdapterTest {
 			connection = DriverManager.getConnection("jdbc:calcite:", info);
 			statement = connection.createStatement();
 			final ResultSet resultSet = statement.executeQuery(sql);
+			System.out.println("\n" + sql);
 			fn.apply(resultSet);
 		} finally {
 			close(connection, statement);
@@ -161,8 +163,9 @@ public class HbaseAdapterTest {
 	public void testSelect() throws SQLException {
 
 		long start = System.currentTimeMillis();
+		
 		String sql_blog_test = "select *  from BLOG";
-		System.out.println("\n" + sql_blog_test);
+		//System.out.println("\n" + sql_blog_test);
 		checkSql("hbase_model", sql_blog_test);
 
 		long end = System.currentTimeMillis();
@@ -170,7 +173,7 @@ public class HbaseAdapterTest {
 		System.out.println("--|Search used " + usedTime + " ms");
 
 		String sql_metadata_test = "select * from KYLIN_METADATA where ROW_KEY='/project/learn_kylin.json'";
-		System.out.println("\n" + sql_metadata_test);
+	//	System.out.println("\n" + sql_metadata_test);
 		checkSql("hbase_model", sql_metadata_test);
 	}
 }

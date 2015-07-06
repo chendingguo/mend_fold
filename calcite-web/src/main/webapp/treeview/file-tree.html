@@ -1,99 +1,37 @@
-
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>Config File </title>
+<title>Config File</title>
 <meta charset="utf-8">
 <link href="jquery.tree.css" rel="stylesheet" type="text/css" />
 <meta name="description" content="">
 <meta name="author" content="airsupply">
-<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-
-<!-- Optional theme -->
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-
-<!-- Latest compiled and minified JavaScript -->
-<script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<link href="css/prettify.css" rel="stylesheet">
-<link href="css/hemisu-light.css" rel="stylesheet">
-<link href="css/screen.css" rel="stylesheet" media="screen">
-<!-- <link id="style" href="../css/clean.css" rel="stylesheet"
-	media="screen"> -->
+<link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="../bootstrap/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="../css/prettify.css">
+<link rel="stylesheet" href="../css/hemisu-light.css">
+<link rel="stylesheet" href="../css/screen.css" media="screen">
+<link rel="stylesheet" href="../css/file-tree.css">
+<link rel="stylesheet" href="../css/prism.css">
 <link id="style" href="../css/classic.css" rel="stylesheet"
 	media="screen">
-<style>
-body {
-	margin-left: 10px;
-	margin-right: 10px;
-}
-</style>
+<link
+	href="http://cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css"
+	rel="stylesheet">
+<script src="../js/prism.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
 <script src="../js/jquery.min.js"></script>
 <script src="../bootstrap/js/bootstrap.min.js"></script>
-<script src="../plugins/gotopage.js"></script>
-<script src="../plugins/ajaxpaging.js"></script>
 <script src="../js/jquery.columns.min.js"></script>
 <script src="../js/search/search.js"></script>
-<script src="../js/jquery.min.js" type="text/javascript"></script>
-<!--
-    <script src="js/common.js" type="text/javascript" ></script>
-    -->
-<script src="js/jquery.tree.js" type="text/javascript"></script>
-<!--
-    <script src="js/tree1.js" type="text/javascript" ></script>
-    -->
-<script src="js/tree1.js" type="text/javascript"></script>
+<script src="../js/treeview/jquery.tree.js"></script>
+<script src="../js/treeview/file-tree.js"></script>
 
-<script type="text/javascript">
-var jsonData;
-        $(document).ready(function() {
-        	
-        	$.ajax({
-        		type : "POST",
-        		url : '/calcite-web/search/getConfigFileTree.do',
-        		dataType : 'json',
-        		success : function(json) {
-        			jsonData=json;
-        			showTree();
-        		}
-        	});
-         
-        });
-        
-        function showTree(){
-        	   var o = {
-                       showcheck: true,          
-                       //url: "http://jscs.cloudapp.net/ControlsSample/GetChildData" 
-                       theme: "bbit-tree-lines", //bbit-tree-lines ,bbit-tree-no-lines,bbit-tree-arrows
-                       showcheck: true,
-                       theme: "bbit-tree-arrows", //bbit-tree-lines ,bbit-tree-no-lines,bbit-tree-arrows
-                       onnodeclick:function(item){alert(item.text);}
-                   };
-                   o.data = jsonData;
-                   $("#tree").treeview(o);
-                   $("#showchecked").click(function(e){
-                       var s=$("#tree").getTSVs();
-                       if(s !=null)
-                       alert(s.join(","));
-                       else
-                       alert("NULL");
-                   });
-                    $("#showcurrent").click(function(e){
-                       var s=$("#tree").getTCT();
-                       if(s !=null)
-                           alert(s.text);
-                       else
-                           alert("NULL");
-                    });
-        }
-    </script>
 </head>
+
 <body class='ie'>
-    <nav class="navbar navbar-inverse">
+	<nav class="navbar navbar-inverse">
 		<div class="container-fluid">
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
@@ -111,8 +49,10 @@ var jsonData;
 			<div class="collapse navbar-collapse"
 				id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
-					<li><a href="../search/index.html">Select <span class="sr-only">(current)</span></a></li>
-					<li class="active"><a href="config.html">Config File <span class="sr-only">(current)</span></a></li>
+					<li><a href="../search/index.html">Select <span
+							class="sr-only">(current)</span></a></li>
+					<li class="active"><a href="config.html">Config File <span
+							class="sr-only">(current)</span></a></li>
 				</ul>
 				<form class="navbar-form navbar-left" role="search">
 					<div class="form-group">
@@ -128,7 +68,7 @@ var jsonData;
 						<ul class="dropdown-menu">
 							<li><a href="#">Action</a></li>
 							<li><a href="#">Another action</a></li>
-							
+
 						</ul></li>
 				</ul>
 			</div>
@@ -136,16 +76,33 @@ var jsonData;
 		</div>
 		<!-- /.container-fluid -->
 	</nav>
-	
-	
+
+
 	<div style="margin-bottom: 5px;">
 		<!-- <button id="showchecked">Get Seleceted Nodes</button>
 		<button id="showcurrent">Get Current Node</button> -->
 	</div>
-	<div
-		style="border-bottom: #c3daf9 1px solid; border-left: #c3daf9 1px solid; width: 250px; height: 500px; overflow: auto; border-top: #c3daf9 1px solid; border-right: #c3daf9 1px solid;">
-		<div id="tree"></div>
+	<div>
+		<div class="leftside">
+			<div id="tree"></div>
+		</div>
+
+		<div class="rightside">
+			<pre class="line-numbers">
+			<code id="file_content" class="language-javascript">
+			  $(document).ready(function() {
+    if ($.browser.msie) {
+        var v = parseInt($.browser.version);
+        $(document.body).addClass("ie ie" + v);
+    }
+});
+			 </code>
+			</pre>
+		</div>
+
 
 	</div>
+
 </body>
+
 </html>

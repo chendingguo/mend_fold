@@ -6,7 +6,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<properties>
-		<!-- Hadoop versions -->
+	
 		<hadoop2.version>2.6.0</hadoop2.version>
 		<yarn.version>2.6.0</yarn.version>
 		<zookeeper.version>3.4.6</zookeeper.version>

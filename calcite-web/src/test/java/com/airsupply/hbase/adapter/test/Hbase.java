@@ -15,7 +15,10 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.HConnection;
+import org.apache.hadoop.hbase.client.HConnectionManager;
 import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
@@ -294,10 +297,11 @@ public class Hbase {
 		ResultScanner rs = null;
 
 		try {
-			@SuppressWarnings("resource")
-			HTable table = new HTable(conf, Bytes.toBytes(tableName));
-			rs = table.getScanner(scan);
-			
+			HConnection conn = HConnectionManager.createConnection(conf);
+			HTableInterface htable = conn.getTable(tableName);
+
+			rs = htable.getScanner(scan);
+
 			for (Result r : rs) {
 				List<Cell> ceList = r.listCells();
 				Map<String, Object> map = new TreeMap<String, Object>();
@@ -306,45 +310,40 @@ public class Hbase {
 
 						String rowKey = Bytes.toString(cell.getRowArray(),
 								cell.getRowOffset(), cell.getRowLength());
-						//if (rowKey.endsWith(".json")) {
-							map.put(rowKey
-									+ ":"
-									+ Bytes.toString(cell.getFamilyArray(),
-											cell.getFamilyOffset(),
-											cell.getFamilyLength())
-									+ "_"
-									+ Bytes.toString(cell.getQualifierArray(),
-											cell.getQualifierOffset(),
-											cell.getQualifierLength()), Bytes
-									.toString(cell.getValueArray(),
-											cell.getValueOffset(),
-											cell.getValueLength()));
-							System.out.println("--------------------");
-							System.out.println(rowKey);
-							
-							String familyName=Bytes.toString(cell.getFamilyArray(),
-									cell.getFamilyOffset(),
-									cell.getFamilyLength());
-							System.out.println(familyName);
+						// if (rowKey.endsWith(".json")) {
+						map.put(rowKey
+								+ ":"
+								+ Bytes.toString(cell.getFamilyArray(),
+										cell.getFamilyOffset(),
+										cell.getFamilyLength())
+								+ "_"
+								+ Bytes.toString(cell.getQualifierArray(),
+										cell.getQualifierOffset(),
+										cell.getQualifierLength()),
+								Bytes.toString(cell.getValueArray(),
+										cell.getValueOffset(),
+										cell.getValueLength()));
+						System.out.println("--------------------");
+						System.out.println(rowKey);
 
-							
-							String qualifier=Bytes.toString(cell.getQualifierArray(),
-									cell.getQualifierOffset(),
-									cell.getQualifierLength());
-							System.out.println(qualifier);
-							
-							
-							System.out.println(Bytes
-									.toString(cell.getValueArray(),
-											cell.getValueOffset(),
-											cell.getValueLength()));
-							
-						
+						String familyName = Bytes.toString(
+								cell.getFamilyArray(), cell.getFamilyOffset(),
+								cell.getFamilyLength());
+						System.out.println(familyName);
 
-					//	}
+						String qualifier = Bytes.toString(
+								cell.getQualifierArray(),
+								cell.getQualifierOffset(),
+								cell.getQualifierLength());
+						System.out.println(qualifier);
+
+						System.out.println(Bytes.toString(cell.getValueArray(),
+								cell.getValueOffset(), cell.getValueLength()));
+
+						// }
 
 					}
-					//System.out.println(map);
+					// System.out.println(map);
 				}
 
 			}
@@ -375,13 +374,37 @@ public class Hbase {
 		}
 	}
 
+	public static void getTableDesc() {
+		try {
+			@SuppressWarnings("resource")
+			HBaseAdmin hbaseAdmin = new HBaseAdmin(conf);
+
+			HTableDescriptor[] descriptors = hbaseAdmin.listTables();
+			for (HTableDescriptor tableDesc : descriptors) {
+
+				System.out.println(tableDesc.getNameAsString());
+				HColumnDescriptor[] columnDescs = tableDesc.getColumnFamilies();
+				for (HColumnDescriptor columnDesc : columnDescs) {
+					System.out.println("--" + columnDesc.getNameAsString());
+					System.out.println("----|" + columnDesc.getConfiguration());
+
+				}
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	public static void main(String[] args) throws Exception {
 		System.setProperty("hadoop.home.dir", "D:/develope/hadoop-2.4.0");
 		setConfig();
-		String tableName = "blog-test";
-		// createTable(tableName);
+		String tableName = "blog";
+		// // createTable(tableName);
 		queryTable(tableName);
 
+		//getTableDesc();
 		// // 遍历查询
 		// getResultScann("blog2", "rowkey1", "rowkey2");
 		// // 根据row key范围遍历查询

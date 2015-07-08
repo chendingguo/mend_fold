@@ -1,7 +1,4 @@
 function test() {
-	
-	
-	alert("test");
 	var columns = new Array();
 	for (var i = 0; i < 10; i++) {
 		var columnObj = {
